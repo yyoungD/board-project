@@ -1,0 +1,32 @@
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.*
+
+# Node / React
+node_modules/
+dist/
+.vite/
+
+# Gradle / Spring Boot
+.gradle/
+build/
+bin/
+!server/gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+# IDE
+.vscode/
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# OS
+.DS_Store
+Thumbs.db
