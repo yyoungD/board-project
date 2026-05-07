@@ -12,6 +12,11 @@ body {
   margin: 0;
 }
 
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
 button,
 input,
 textarea {
@@ -19,17 +24,68 @@ textarea {
 }
 
 .app-shell {
-  width: min(1180px, calc(100% - 32px));
+  width: min(1120px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 32px 0 48px;
+  padding: 28px 0 48px;
 }
 
-.page-header {
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #d9e0e6;
+}
+
+.brand {
+  color: #172026;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+nav a {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 6px;
+  padding: 0 13px;
+  color: #40515c;
+  font-weight: 700;
+}
+
+.nav-button,
+.primary-link,
+.primary-button {
+  color: #ffffff;
+  background: #186f65;
+}
+
+.page-section {
+  background: #ffffff;
+  border: 1px solid #d9e0e6;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.narrow-page {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.page-title-row {
   display: flex;
   align-items: end;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
 .eyebrow {
@@ -47,27 +103,7 @@ p {
 
 h1 {
   margin-bottom: 0;
-  font-size: 34px;
-}
-
-h2 {
-  margin-bottom: 18px;
-  font-size: 20px;
-}
-
-.board-layout {
-  display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 20px;
-  align-items: start;
-}
-
-.post-form,
-.post-list {
-  background: #ffffff;
-  border: 1px solid #d9e0e6;
-  border-radius: 8px;
-  padding: 22px;
+  font-size: 30px;
 }
 
 .post-form {
@@ -94,7 +130,7 @@ textarea {
 }
 
 textarea {
-  min-height: 180px;
+  min-height: 260px;
   resize: vertical;
 }
 
@@ -105,8 +141,13 @@ textarea:focus {
 }
 
 .primary-button,
-.secondary-button {
+.secondary-button,
+.primary-link,
+.secondary-link {
   min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 0;
   border-radius: 6px;
   padding: 0 18px;
@@ -114,42 +155,38 @@ textarea:focus {
   cursor: pointer;
 }
 
-.primary-button {
-  color: #ffffff;
-  background: #186f65;
-}
-
 .primary-button:disabled {
   cursor: wait;
   background: #8aa7a2;
 }
 
-.secondary-button {
+.secondary-button,
+.secondary-link {
   color: #1d3b53;
   background: #dfeaf1;
 }
 
-.list-toolbar {
+.form-actions {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.list-toolbar h2 {
-  margin-bottom: 0;
-}
-
-.list-toolbar span {
-  color: #52616b;
-  font-size: 14px;
-  font-weight: 700;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .status-message,
 .empty-message {
   margin: 14px 0 0;
+  color: #52616b;
+}
+
+.empty-state {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+  padding: 34px 0;
+}
+
+.empty-state p {
+  margin-bottom: 0;
   color: #52616b;
 }
 
@@ -159,14 +196,14 @@ textarea:focus {
 
 table {
   width: 100%;
-  min-width: 680px;
+  min-width: 640px;
   border-collapse: collapse;
 }
 
 th,
 td {
   border-bottom: 1px solid #e3e8ec;
-  padding: 13px 10px;
+  padding: 14px 10px;
   text-align: left;
   vertical-align: top;
 }
@@ -177,36 +214,82 @@ th {
   font-size: 14px;
 }
 
-td {
-  line-height: 1.45;
-}
-
 td:nth-child(1) {
-  width: 24%;
+  width: 54%;
   font-weight: 700;
 }
 
 td:nth-child(2) {
-  width: 14%;
+  width: 18%;
 }
 
 td:nth-child(3) {
-  width: 38%;
-  white-space: pre-wrap;
-}
-
-td:nth-child(4) {
-  width: 24%;
+  width: 28%;
   color: #52616b;
 }
 
-@media (max-width: 860px) {
-  .page-header {
+.title-link {
+  color: #145f58;
+}
+
+.title-link:hover {
+  text-decoration: underline;
+}
+
+.post-detail {
+  display: grid;
+  gap: 24px;
+}
+
+.post-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid #e3e8ec;
+  border-radius: 8px;
+  background: #f7f9fa;
+}
+
+.post-meta div {
+  display: grid;
+  gap: 4px;
+}
+
+.post-meta dt {
+  color: #52616b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.post-meta dd {
+  margin: 0;
+  color: #172026;
+}
+
+.post-content {
+  min-height: 220px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 720px) {
+  .app-header,
+  .page-title-row {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .board-layout {
+  nav {
+    justify-content: space-between;
+  }
+
+  .page-section {
+    padding: 18px;
+  }
+
+  .post-meta {
     grid-template-columns: 1fr;
   }
 }
