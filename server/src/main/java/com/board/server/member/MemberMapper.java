@@ -2,10 +2,13 @@ package com.board.server.member;
 
 import java.util.Optional;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface MemberMapper {
@@ -37,4 +40,24 @@ public interface MemberMapper {
 		""")
 	@Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
 	int insert(Member member);
+
+	@Update("""
+		UPDATE members
+		SET phone = #{phone}
+		WHERE login_id = #{loginId}
+		""")
+	int updateProfile(@Param("loginId") String loginId, @Param("phone") String phone);
+
+	@Update("""
+		UPDATE members
+		SET password_hash = #{passwordHash}
+		WHERE login_id = #{loginId}
+		""")
+	int updatePassword(@Param("loginId") String loginId, @Param("passwordHash") String passwordHash);
+
+	@Delete("""
+		DELETE FROM members
+		WHERE login_id = #{loginId}
+		""")
+	int deleteByLoginId(String loginId);
 }

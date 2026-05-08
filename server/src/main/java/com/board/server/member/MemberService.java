@@ -55,4 +55,39 @@ public class MemberService {
 
 		return new MemberAuthResponse(memberResponse, token);
 	}
+
+	@Transactional(readOnly = true)
+	public MemberSignupResponse findMe(String loginId) {
+		return memberMapper.findByLoginId(loginId)
+			.map(MemberSignupResponse::from)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
+	}
+
+	@Transactional
+	public MemberAuthResponse updateMe(String loginId, MemberUpdateRequest request) {
+		int updatedRows = memberMapper.updateProfile(loginId, request.phone());
+		if (updatedRows == 0) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다.");
+		}
+
+		if (request.hasPassword()) {
+			memberMapper.updatePassword(loginId, passwordEncoder.encode(request.password()));
+		}
+
+		Member member = memberMapper.findByLoginId(loginId)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
+
+		MemberSignupResponse memberResponse = MemberSignupResponse.from(member);
+		String token = jwtProvider.createToken(new AuthenticatedMember(member.getId(), member.getLoginId(), member.getName()));
+
+		return new MemberAuthResponse(memberResponse, token);
+	}
+
+	@Transactional
+	public void deleteMe(String loginId) {
+		int deletedRows = memberMapper.deleteByLoginId(loginId);
+		if (deletedRows == 0) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다.");
+		}
+	}
 }
