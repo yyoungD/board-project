@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.board.server.auth.AuthenticatedMember;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -38,21 +41,31 @@ public class PostController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Post> create(@Valid @RequestBody PostCreateRequest request) {
-		Post createdPost = postService.create(request);
+	public ResponseEntity<Post> create(
+		@Valid @RequestBody PostCreateRequest request,
+		@RequestAttribute("authenticatedMember") AuthenticatedMember member
+	) {
+		Post createdPost = postService.create(request, member.loginId());
 		return ResponseEntity
 			.created(URI.create("/api/posts/" + createdPost.getId()))
 			.body(createdPost);
 	}
 
 	@PutMapping("/{id}")
-	public Post update(@PathVariable Long id, @Valid @RequestBody PostUpdateRequest request) {
-		return postService.update(id, request);
+	public Post update(
+		@PathVariable Long id,
+		@Valid @RequestBody PostUpdateRequest request,
+		@RequestAttribute("authenticatedMember") AuthenticatedMember member
+	) {
+		return postService.update(id, request, member.loginId());
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteById(@PathVariable Long id) {
-		postService.deleteById(id);
+	public ResponseEntity<Void> deleteById(
+		@PathVariable Long id,
+		@RequestAttribute("authenticatedMember") AuthenticatedMember member
+	) {
+		postService.deleteById(id, member.loginId());
 		return ResponseEntity.noContent().build();
 	}
 }

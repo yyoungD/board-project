@@ -43,7 +43,6 @@ function CreatePostPage({ member }) {
     try {
       const createdPost = await createPost({
         title: form.title,
-        author: member.loginId,
         content: form.content
       });
       navigate(`/posts/${createdPost.id}`);

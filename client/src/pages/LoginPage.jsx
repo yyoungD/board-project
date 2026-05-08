@@ -33,8 +33,8 @@ function LoginPage({ onLogin }) {
     }
 
     try {
-      const member = await login(form);
-      onLogin(member);
+      const authResponse = await login(form);
+      onLogin(authResponse);
       navigate('/');
     } catch (error) {
       setMessage(getErrorMessage(error, '로그인에 실패했습니다.'));
@@ -50,12 +50,9 @@ function LoginPage({ onLogin }) {
           <p className="eyebrow">로그인</p>
           <h1>회원 로그인</h1>
         </div>
-
       </div>
 
       <form className="post-form" onSubmit={handleSubmit} noValidate>
-        
-
         <label>
           아이디
           <input

@@ -38,7 +38,6 @@ public interface PostMapper {
 	@Update("""
 		UPDATE posts
 		SET title = #{request.title},
-		    author = #{request.author},
 		    content = #{request.content}
 		WHERE id = #{id}
 		""")

@@ -28,10 +28,10 @@ public class PostService {
 	}
 
 	@Transactional
-	public Post create(PostCreateRequest request) {
+	public Post create(PostCreateRequest request, String loginId) {
 		Post post = new Post();
 		post.setTitle(request.title());
-		post.setAuthor(request.author());
+		post.setAuthor(loginId);
 		post.setContent(request.content());
 
 		postMapper.insert(post);
@@ -39,7 +39,12 @@ public class PostService {
 	}
 
 	@Transactional
-	public Post update(Long id, PostUpdateRequest request) {
+	public Post update(Long id, PostUpdateRequest request, String loginId) {
+		Post post = findById(id);
+		if (!post.getAuthor().equals(loginId)) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인이 작성한 글만 수정할 수 있습니다.");
+		}
+
 		int updatedRows = postMapper.update(id, request);
 		if (updatedRows == 0) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
@@ -48,7 +53,12 @@ public class PostService {
 	}
 
 	@Transactional
-	public void deleteById(Long id) {
+	public void deleteById(Long id, String loginId) {
+		Post post = findById(id);
+		if (!post.getAuthor().equals(loginId)) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인이 작성한 글만 삭제할 수 있습니다.");
+		}
+
 		int deletedRows = postMapper.deleteById(id);
 		if (deletedRows == 0) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");

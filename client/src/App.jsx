@@ -16,13 +16,15 @@ function App() {
   const navigate = useNavigate();
   const [member, setMember] = React.useState(getSavedMember);
 
-  function handleLogin(loggedInMember) {
-    localStorage.setItem('member', JSON.stringify(loggedInMember));
-    setMember(loggedInMember);
+  function handleLogin(authResponse) {
+    localStorage.setItem('member', JSON.stringify(authResponse.member));
+    localStorage.setItem('token', authResponse.token);
+    setMember(authResponse.member);
   }
 
   function handleLogout() {
     localStorage.removeItem('member');
+    localStorage.removeItem('token');
     setMember(null);
     navigate('/');
   }

@@ -68,7 +68,10 @@ function EditPostPage({ member }) {
     }
 
     try {
-      const updatedPost = await updatePost(id, form);
+      const updatedPost = await updatePost(id, {
+        title: form.title,
+        content: form.content
+      });
       navigate(`/posts/${updatedPost.id}`);
     } catch (error) {
       setMessage(getErrorMessage(error, '게시글 수정에 실패했습니다.'));

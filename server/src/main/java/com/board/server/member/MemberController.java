@@ -31,7 +31,7 @@ public class MemberController {
 	}
 
 	@PostMapping("/login")
-	public MemberSignupResponse login(@Valid @RequestBody MemberLoginRequest request) {
+	public MemberAuthResponse login(@Valid @RequestBody MemberLoginRequest request) {
 		return memberService.login(request);
 	}
 }

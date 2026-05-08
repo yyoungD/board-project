@@ -6,15 +6,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.board.server.auth.AuthenticatedMember;
+import com.board.server.auth.JwtProvider;
+
 @Service
 public class MemberService {
 
 	private final MemberMapper memberMapper;
 	private final PasswordEncoder passwordEncoder;
+	private final JwtProvider jwtProvider;
 
-	public MemberService(MemberMapper memberMapper, PasswordEncoder passwordEncoder) {
+	public MemberService(MemberMapper memberMapper, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
 		this.memberMapper = memberMapper;
 		this.passwordEncoder = passwordEncoder;
+		this.jwtProvider = jwtProvider;
 	}
 
 	@Transactional
@@ -37,7 +42,7 @@ public class MemberService {
 	}
 
 	@Transactional(readOnly = true)
-	public MemberSignupResponse login(MemberLoginRequest request) {
+	public MemberAuthResponse login(MemberLoginRequest request) {
 		Member member = memberMapper.findByLoginId(request.loginId())
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "아이디 또는 비밀번호가 올바르지 않습니다."));
 
@@ -45,6 +50,9 @@ public class MemberService {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "아이디 또는 비밀번호가 올바르지 않습니다.");
 		}
 
-		return MemberSignupResponse.from(member);
+		MemberSignupResponse memberResponse = MemberSignupResponse.from(member);
+		String token = jwtProvider.createToken(new AuthenticatedMember(member.getId(), member.getLoginId(), member.getName()));
+
+		return new MemberAuthResponse(memberResponse, token);
 	}
 }
