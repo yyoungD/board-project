@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { deletePost, getErrorMessage, getPost } from '../api/posts.js';
-import { formatDateTime } from '../utils/date.js';
+import { deletePost, getErrorMessage, getPost } from '../../api/posts.js';
+import { formatDateTime } from '../../utils/date.js';
 
 function PostDetailPage({ member }) {
   const { id } = useParams();

@@ -364,6 +364,13 @@ textarea:focus {
   color: #52616b;
 }
 
+.list-summary {
+  margin-bottom: 10px;
+  color: #52616b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .table-wrap {
   overflow-x: auto;
 }
@@ -408,6 +415,37 @@ td:nth-child(3) {
 
 .title-link:hover {
   text-decoration: underline;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 22px;
+}
+
+.pagination button {
+  min-width: 38px;
+  height: 38px;
+  border: 1px solid #d9e0e6;
+  border-radius: 6px;
+  padding: 0 12px;
+  color: #40515c;
+  background: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pagination button.active {
+  color: #ffffff;
+  border-color: #186f65;
+  background: #186f65;
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  color: #9aa7af;
+  background: #f7f9fa;
 }
 
 .post-detail {

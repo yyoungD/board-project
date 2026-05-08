@@ -18,8 +18,16 @@ public interface PostMapper {
 		SELECT id, title, author, content, created_at
 		FROM posts
 		ORDER BY id DESC
+		LIMIT #{size}
+		OFFSET #{offset}
 		""")
-	List<Post> findAll();
+	List<Post> findPage(@Param("size") int size, @Param("offset") int offset);
+
+	@Select("""
+		SELECT COUNT(*)
+		FROM posts
+		""")
+	long countAll();
 
 	@Select("""
 		SELECT id, title, author, content, created_at

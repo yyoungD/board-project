@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { getErrorMessage, getPost, updatePost } from '../api/posts.js';
-import RichTextEditor from '../components/RichTextEditor.jsx';
+import { getErrorMessage, getPost, updatePost } from '../../api/posts.js';
+import RichTextEditor from '../../components/RichTextEditor.jsx';
 
 const emptyForm = {
   title: '',

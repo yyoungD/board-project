@@ -17,8 +17,16 @@ public class PostService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Post> findAll() {
-		return postMapper.findAll();
+	public PageResponse<Post> findPage(int page, int size) {
+		int safePage = Math.max(page, 1);
+		int safeSize = Math.min(Math.max(size, 1), 100);
+		int offset = (safePage - 1) * safeSize;
+
+		List<Post> content = postMapper.findPage(safeSize, offset);
+		long totalElements = postMapper.countAll();
+		int totalPages = (int) Math.ceil((double) totalElements / safeSize);
+
+		return new PageResponse<>(content, safePage, safeSize, totalElements, totalPages);
 	}
 
 	@Transactional(readOnly = true)

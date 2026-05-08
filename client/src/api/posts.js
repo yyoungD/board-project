@@ -1,7 +1,12 @@
 import apiClient from './client.js';
 
-export async function getPosts() {
-  const response = await apiClient.get('/api/posts');
+export async function getPosts(page = 1, size = 10) {
+  const response = await apiClient.get('/api/posts', {
+    params: {
+      page,
+      size
+    }
+  });
   return response.data;
 }
 

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link, Route, Routes, useNavigate } from 'react-router-dom';
-import CreatePostPage from './pages/CreatePostPage.jsx';
-import EditPostPage from './pages/EditPostPage.jsx';
-import LoginPage from './pages/LoginPage.jsx';
-import MyPage from './pages/MyPage.jsx';
-import PostDetailPage from './pages/PostDetailPage.jsx';
-import PostListPage from './pages/PostListPage.jsx';
-import SignupPage from './pages/SignupPage.jsx';
+import LoginPage from './pages/member/LoginPage.jsx';
+import MyPage from './pages/member/MyPage.jsx';
+import SignupPage from './pages/member/SignupPage.jsx';
+import CreatePostPage from './pages/post/CreatePostPage.jsx';
+import EditPostPage from './pages/post/EditPostPage.jsx';
+import PostDetailPage from './pages/post/PostDetailPage.jsx';
+import PostListPage from './pages/post/PostListPage.jsx';
 
 function getSavedMember() {
   const savedMember = localStorage.getItem('member');
