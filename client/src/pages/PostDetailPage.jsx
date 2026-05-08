@@ -3,13 +3,15 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { deletePost, getErrorMessage, getPost } from '../api/posts.js';
 import { formatDateTime } from '../utils/date.js';
 
-function PostDetailPage() {
+function PostDetailPage({ member }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [message, setMessage] = React.useState('');
+
+  const isOwner = Boolean(member && post && post.author === member.loginId);
 
   React.useEffect(() => {
     async function loadPost() {
@@ -55,10 +57,7 @@ function PostDetailPage() {
           <h1>{post?.title || '게시글'}</h1>
         </div>
         <div className="page-actions">
-          <Link className="secondary-link" to="/">
-            목록
-          </Link>
-          {post && (
+          {isOwner && (
             <>
               <Link className="secondary-link" to={`/posts/${id}/edit`}>
                 수정
@@ -97,6 +96,10 @@ function PostDetailPage() {
       ) : (
         <p className="empty-message">게시글을 찾을 수 없습니다.</p>
       )}
+
+      <Link className="wide-list-link detail-list-link" to="/">
+        목록
+      </Link>
     </section>
   );
 }

@@ -24,6 +24,13 @@ public interface MemberMapper {
 		""")
 	Optional<Member> findById(Long id);
 
+	@Select("""
+		SELECT id, login_id, password_hash, name, phone, created_at
+		FROM members
+		WHERE login_id = #{loginId}
+		""")
+	Optional<Member> findByLoginId(String loginId);
+
 	@Insert("""
 		INSERT INTO members (login_id, password_hash, name, phone)
 		VALUES (#{loginId}, #{passwordHash}, #{name}, #{phone})

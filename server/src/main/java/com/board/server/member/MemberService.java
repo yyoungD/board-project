@@ -35,4 +35,16 @@ public class MemberService {
 			.map(MemberSignupResponse::from)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "회원 저장에 실패했습니다."));
 	}
+
+	@Transactional(readOnly = true)
+	public MemberSignupResponse login(MemberLoginRequest request) {
+		Member member = memberMapper.findByLoginId(request.loginId())
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "아이디 또는 비밀번호가 올바르지 않습니다."));
+
+		if (!passwordEncoder.matches(request.password(), member.getPasswordHash())) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "아이디 또는 비밀번호가 올바르지 않습니다.");
+		}
+
+		return MemberSignupResponse.from(member);
+	}
 }

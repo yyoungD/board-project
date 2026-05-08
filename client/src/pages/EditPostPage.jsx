@@ -8,13 +8,14 @@ const emptyForm = {
   content: ''
 };
 
-function EditPostPage() {
+function EditPostPage({ member }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [form, setForm] = React.useState(emptyForm);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isSaving, setIsSaving] = React.useState(false);
   const [message, setMessage] = React.useState('');
+  const [canEdit, setCanEdit] = React.useState(false);
 
   React.useEffect(() => {
     async function loadPost() {
@@ -28,6 +29,7 @@ function EditPostPage() {
           author: post.author,
           content: post.content
         });
+        setCanEdit(Boolean(member && post.author === member.loginId));
       } catch (error) {
         setMessage(getErrorMessage(error, '게시글을 불러오지 못했습니다.'));
       } finally {
@@ -36,7 +38,7 @@ function EditPostPage() {
     }
 
     loadPost();
-  }, [id]);
+  }, [id, member]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -50,6 +52,12 @@ function EditPostPage() {
     event.preventDefault();
     setIsSaving(true);
     setMessage('');
+
+    if (!canEdit) {
+      setMessage('본인이 작성한 글만 수정할 수 있습니다.');
+      setIsSaving(false);
+      return;
+    }
 
     try {
       const updatedPost = await updatePost(id, form);
@@ -75,6 +83,8 @@ function EditPostPage() {
 
       {isLoading ? (
         <p className="empty-message">불러오는 중입니다.</p>
+      ) : !canEdit ? (
+        <p className="empty-message">본인이 작성한 글만 수정할 수 있습니다.</p>
       ) : (
         <form className="post-form" onSubmit={handleSubmit}>
           {message && <p className="status-message">{message}</p>}
@@ -90,16 +100,10 @@ function EditPostPage() {
             />
           </label>
 
-          <label>
-            작성자
-            <input
-              name="author"
-              value={form.author}
-              onChange={handleChange}
-              maxLength="100"
-              required
-            />
-          </label>
+          <div className="field-block">
+            <span className="field-label">작성자</span>
+            <span className="author-display">{form.author}</span>
+          </div>
 
           <label>
             내용

@@ -29,4 +29,9 @@ public class MemberController {
 			.created(URI.create("/api/members/" + response.id()))
 			.body(response);
 	}
+
+	@PostMapping("/login")
+	public MemberSignupResponse login(@Valid @RequestBody MemberLoginRequest request) {
+		return memberService.login(request);
+	}
 }

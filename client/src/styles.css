@@ -61,6 +61,17 @@ nav a {
   font-weight: 700;
 }
 
+.nav-text-button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 6px;
+  padding: 0 13px;
+  color: #40515c;
+  background: transparent;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .nav-button,
 .primary-link,
 .primary-button {
@@ -119,6 +130,28 @@ label {
   font-weight: 700;
 }
 
+.field-block {
+  display: grid;
+  gap: 7px;
+}
+
+.field-label {
+  color: #34434d;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.author-display {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #d9e0e6;
+  border-radius: 6px;
+  padding: 0 12px;
+  color: #40515c;
+  background: #f7f9fa;
+}
+
 input,
 textarea {
   width: 100%;
@@ -162,9 +195,10 @@ textarea:focus {
 
 .secondary-button,
 .secondary-link {
-  color: #1d3b53;
-  background: #dfeaf1;
+  color: #ffffff;
+  background: #1b50ffe7;
 }
+
 
 .danger-button {
   min-height: 42px;
@@ -196,6 +230,24 @@ textarea:focus {
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.wide-list-link {
+  min-height: 42px;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d9e0e6;
+  border-radius: 8px;
+  padding: 0 18px;
+  color: #40515c;
+  background: #f7f9fa;
+  font-weight: 700;
+}
+
+.detail-list-link {
+  margin-top: 22px;
 }
 
 .status-message,

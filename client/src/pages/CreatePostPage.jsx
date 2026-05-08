@@ -4,11 +4,10 @@ import { createPost, getErrorMessage } from '../api/posts.js';
 
 const emptyForm = {
   title: '',
-  author: '',
   content: ''
 };
 
-function CreatePostPage() {
+function CreatePostPage({ member }) {
   const navigate = useNavigate();
   const [form, setForm] = React.useState(emptyForm);
   const [isSaving, setIsSaving] = React.useState(false);
@@ -27,14 +26,40 @@ function CreatePostPage() {
     setIsSaving(true);
     setMessage('');
 
+    if (!member) {
+      setMessage('로그인 후 글을 작성할 수 있습니다.');
+      setIsSaving(false);
+      return;
+    }
+
     try {
-      const createdPost = await createPost(form);
+      const createdPost = await createPost({
+        title: form.title,
+        author: member.loginId,
+        content: form.content
+      });
       navigate(`/posts/${createdPost.id}`);
     } catch (error) {
       setMessage(getErrorMessage(error, '게시글 저장에 실패했습니다.'));
     } finally {
       setIsSaving(false);
     }
+  }
+
+  if (!member) {
+    return (
+      <section className="page-section narrow-page">
+        <p className="empty-message">로그인 후 글을 작성할 수 있습니다.</p>
+        <div className="form-actions">
+          <Link className="secondary-link" to="/">
+            목록
+          </Link>
+          <Link className="primary-link" to="/login">
+            로그인
+          </Link>
+        </div>
+      </section>
+    );
   }
 
   return (
@@ -44,9 +69,6 @@ function CreatePostPage() {
           <p className="eyebrow">게시글 작성</p>
           <h1>새 글 쓰기</h1>
         </div>
-        <Link className="secondary-link" to="/">
-          목록
-        </Link>
       </div>
 
       <form className="post-form" onSubmit={handleSubmit}>
@@ -63,16 +85,10 @@ function CreatePostPage() {
           />
         </label>
 
-        <label>
-          작성자
-          <input
-            name="author"
-            value={form.author}
-            onChange={handleChange}
-            maxLength="100"
-            required
-          />
-        </label>
+        <div className="field-block">
+          <span className="field-label">작성자</span>
+          <span className="author-display">{member.loginId}</span>
+        </div>
 
         <label>
           내용

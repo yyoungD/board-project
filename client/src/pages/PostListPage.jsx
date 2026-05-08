@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { getErrorMessage, getPosts } from '../api/posts.js';
 import { formatDateTime } from '../utils/date.js';
 
-function PostListPage() {
+function PostListPage({ member }) {
   const [posts, setPosts] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [message, setMessage] = React.useState('');
@@ -33,9 +33,11 @@ function PostListPage() {
           <p className="eyebrow">게시글 목록</p>
           <h1>전체 게시글</h1>
         </div>
-        <button className="secondary-button" type="button" onClick={loadPosts}>
-          새로고침
-        </button>
+        {member && (
+          <Link className="primary-link" to="/posts/new">
+            글쓰기
+          </Link>
+        )}
       </div>
 
       {message && <p className="status-message">{message}</p>}
@@ -45,9 +47,11 @@ function PostListPage() {
       ) : posts.length === 0 ? (
         <div className="empty-state">
           <p>아직 등록된 게시글이 없습니다.</p>
-          <Link className="primary-link" to="/posts/new">
-            첫 글 작성
-          </Link>
+          {member && (
+            <Link className="primary-link" to="/posts/new">
+              첫 글 작성
+            </Link>
+          )}
         </div>
       ) : (
         <div className="table-wrap">
