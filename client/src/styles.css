@@ -178,6 +178,18 @@ textarea:focus {
   color: #52616b;
 }
 
+.field-help {
+  color: #667780;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.field-error {
+  color: #c62828;
+  font-size: 13px;
+  font-weight: 400;
+}
+
 .empty-state {
   display: grid;
   gap: 16px;
