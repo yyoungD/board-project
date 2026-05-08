@@ -1,12 +1,14 @@
 import React from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { getErrorMessage, getPost } from '../api/posts.js';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { deletePost, getErrorMessage, getPost } from '../api/posts.js';
 import { formatDateTime } from '../utils/date.js';
 
 function PostDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [post, setPost] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [isDeleting, setIsDeleting] = React.useState(false);
   const [message, setMessage] = React.useState('');
 
   React.useEffect(() => {
@@ -27,6 +29,24 @@ function PostDetailPage() {
     loadPost();
   }, [id]);
 
+  async function handleDelete() {
+    const confirmed = window.confirm('게시글을 삭제하시겠습니까?');
+    if (!confirmed) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setMessage('');
+
+    try {
+      await deletePost(id);
+      navigate('/');
+    } catch (error) {
+      setMessage(getErrorMessage(error, '게시글 삭제에 실패했습니다.'));
+      setIsDeleting(false);
+    }
+  }
+
   return (
     <section className="page-section narrow-page">
       <div className="page-title-row">
@@ -34,9 +54,26 @@ function PostDetailPage() {
           <p className="eyebrow">게시글 상세</p>
           <h1>{post?.title || '게시글'}</h1>
         </div>
-        <Link className="secondary-link" to="/">
-          목록
-        </Link>
+        <div className="page-actions">
+          <Link className="secondary-link" to="/">
+            목록
+          </Link>
+          {post && (
+            <>
+              <Link className="secondary-link" to={`/posts/${id}/edit`}>
+                수정
+              </Link>
+              <button
+                className="danger-button"
+                type="button"
+                onClick={handleDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? '삭제 중' : '삭제'}
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {message && <p className="status-message">{message}</p>}

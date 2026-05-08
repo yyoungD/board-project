@@ -15,6 +15,15 @@ export async function createPost(post) {
   return response.data;
 }
 
+export async function updatePost(id, post) {
+  const response = await axios.put(`/api/posts/${id}`, post);
+  return response.data;
+}
+
+export async function deletePost(id) {
+  await axios.delete(`/api/posts/${id}`);
+}
+
 export function getErrorMessage(error, fallbackMessage) {
   return error.response?.data?.message || error.message || fallbackMessage;
 }

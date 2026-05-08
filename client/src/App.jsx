@@ -1,5 +1,6 @@
 import { Link, Route, Routes } from 'react-router-dom';
 import CreatePostPage from './pages/CreatePostPage.jsx';
+import EditPostPage from './pages/EditPostPage.jsx';
 import PostDetailPage from './pages/PostDetailPage.jsx';
 import PostListPage from './pages/PostListPage.jsx';
 import SignupPage from './pages/SignupPage.jsx';
@@ -25,6 +26,7 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/posts/new" element={<CreatePostPage />} />
         <Route path="/posts/:id" element={<PostDetailPage />} />
+        <Route path="/posts/:id/edit" element={<EditPostPage />} />
       </Routes>
     </main>
   );
