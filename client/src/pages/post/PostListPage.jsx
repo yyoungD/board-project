@@ -74,7 +74,7 @@ function PostListPage({ member }) {
                 ? '검색 결과가 없습니다.'
                 : '아직 등록된 게시글이 없습니다.'}
             </p>
-            {member && (
+            {member && !keyword && (
               <Link className="primary-link" to="/posts/new">
                 첫 글 작성
               </Link>
@@ -85,7 +85,7 @@ function PostListPage({ member }) {
       ) : (
         <>
           <div className="list-summary">총 {totalElements}개</div>
-          <div className="table-wrap">
+          <div key={`${keyword}-${page}`} className="table-wrap results-view">
             <table>
               <thead>
                 <tr>

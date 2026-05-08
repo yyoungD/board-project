@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Route, Routes, useNavigate } from 'react-router-dom';
+import { Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import LoginPage from './pages/member/LoginPage.jsx';
 import MyPage from './pages/member/MyPage.jsx';
 import SignupPage from './pages/member/SignupPage.jsx';
@@ -14,6 +14,7 @@ function getSavedMember() {
 }
 
 function App() {
+  const location = useLocation();
   const navigate = useNavigate();
   const [member, setMember] = React.useState(getSavedMember);
 
@@ -54,15 +55,17 @@ function App() {
         </nav>
       </header>
 
-      <Routes>
-        <Route path="/" element={<PostListPage member={member} />} />
-        <Route path="/login" element={<LoginPage onLogin={saveAuth} />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/mypage" element={<MyPage member={member} onAuthChange={saveAuth} onLogout={handleLogout} />} />
-        <Route path="/posts/new" element={<CreatePostPage member={member} />} />
-        <Route path="/posts/:id" element={<PostDetailPage member={member} />} />
-        <Route path="/posts/:id/edit" element={<EditPostPage member={member} />} />
-      </Routes>
+      <div key={location.pathname} className="route-view">
+        <Routes>
+          <Route path="/" element={<PostListPage member={member} />} />
+          <Route path="/login" element={<LoginPage onLogin={saveAuth} />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/mypage" element={<MyPage member={member} onAuthChange={saveAuth} onLogout={handleLogout} />} />
+          <Route path="/posts/new" element={<CreatePostPage member={member} />} />
+          <Route path="/posts/:id" element={<PostDetailPage member={member} />} />
+          <Route path="/posts/:id/edit" element={<EditPostPage member={member} />} />
+        </Routes>
+      </div>
     </main>
   );
 }
