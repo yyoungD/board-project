@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { getErrorMessage, getPosts } from '../../api/posts.js';
 import Pagination from '../../components/Pagination.jsx';
+import SearchBar from '../../components/SearchBar.jsx';
 import { formatDateTime } from '../../utils/date.js';
 
 const pageSize = 10;
@@ -9,6 +10,7 @@ const pageSize = 10;
 function PostListPage({ member }) {
   const [posts, setPosts] = React.useState([]);
   const [page, setPage] = React.useState(1);
+  const [keyword, setKeyword] = React.useState('');
   const [totalPages, setTotalPages] = React.useState(0);
   const [totalElements, setTotalElements] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -20,7 +22,7 @@ function PostListPage({ member }) {
       setMessage('');
 
       try {
-        const data = await getPosts(page, pageSize);
+        const data = await getPosts(page, pageSize, keyword);
         setPosts(data.content);
         setTotalPages(data.totalPages);
         setTotalElements(data.totalElements);
@@ -32,7 +34,12 @@ function PostListPage({ member }) {
     }
 
     loadPosts();
-  }, [page]);
+  }, [page, keyword]);
+
+  function handleSearch(nextKeyword) {
+    setKeyword(nextKeyword);
+    setPage(1);
+  }
 
   return (
     <section className="page-section">
@@ -41,11 +48,18 @@ function PostListPage({ member }) {
           <p className="eyebrow">게시글 목록</p>
           <h1>전체 게시글</h1>
         </div>
-        {member && (
-          <Link className="primary-link" to="/posts/new">
-            글쓰기
-          </Link>
-        )}
+        <div className="list-actions">
+          <SearchBar
+            initialKeyword={keyword}
+            placeholder="제목으로 검색"
+            onSearch={handleSearch}
+          />
+          {member && (
+            <Link className="primary-link" to="/posts/new">
+              글쓰기
+            </Link>
+          )}
+        </div>
       </div>
 
       {message && <p className="status-message">{message}</p>}
@@ -55,7 +69,11 @@ function PostListPage({ member }) {
       ) : posts.length === 0 ? (
         <>
           <div className="empty-state">
-            <p>아직 등록된 게시글이 없습니다.</p>
+            <p>
+              {keyword
+                ? '검색 결과가 없습니다.'
+                : '아직 등록된 게시글이 없습니다.'}
+            </p>
             {member && (
               <Link className="primary-link" to="/posts/new">
                 첫 글 작성

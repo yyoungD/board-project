@@ -99,6 +99,40 @@ nav a {
   margin-bottom: 22px;
 }
 
+.list-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.search-bar {
+  min-width: min(360px, 100%);
+  position: relative;
+}
+
+.search-input {
+  min-height: 42px;
+  padding-right: 46px;
+}
+
+.search-button {
+  width: 36px;
+  height: 36px;
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 6px;
+  padding: 0;
+  color: #ffffff;
+  background: #40515c;
+  cursor: pointer;
+}
+
 .eyebrow {
   margin: 0 0 6px;
   color: #52616b;
@@ -262,6 +296,7 @@ textarea:focus {
 .primary-link,
 .secondary-link {
   min-height: 42px;
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -269,6 +304,7 @@ textarea:focus {
   border-radius: 6px;
   padding: 0 18px;
   font-weight: 700;
+  white-space: nowrap;
   cursor: pointer;
 }
 
@@ -492,6 +528,16 @@ td:nth-child(3) {
 @media (max-width: 720px) {
   .app-header,
   .page-title-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .list-actions,
+  .search-bar {
+    width: 100%;
+  }
+
+  .list-actions {
     align-items: stretch;
     flex-direction: column;
   }

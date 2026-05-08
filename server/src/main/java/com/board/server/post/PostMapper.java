@@ -15,19 +15,37 @@ import org.apache.ibatis.annotations.Update;
 public interface PostMapper {
 
 	@Select("""
+		<script>
 		SELECT id, title, author, content, created_at
 		FROM posts
+		<where>
+			<if test="keyword != null and keyword != ''">
+				title ILIKE CONCAT('%', #{keyword}, '%')
+			</if>
+		</where>
 		ORDER BY id DESC
 		LIMIT #{size}
 		OFFSET #{offset}
+		</script>
 		""")
-	List<Post> findPage(@Param("size") int size, @Param("offset") int offset);
+	List<Post> findPage(
+		@Param("keyword") String keyword,
+		@Param("size") int size,
+		@Param("offset") int offset
+	);
 
 	@Select("""
+		<script>
 		SELECT COUNT(*)
 		FROM posts
+		<where>
+			<if test="keyword != null and keyword != ''">
+				title ILIKE CONCAT('%', #{keyword}, '%')
+			</if>
+		</where>
+		</script>
 		""")
-	long countAll();
+	long countAll(@Param("keyword") String keyword);
 
 	@Select("""
 		SELECT id, title, author, content, created_at

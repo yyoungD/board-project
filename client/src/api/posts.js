@@ -1,10 +1,11 @@
 import apiClient from './client.js';
 
-export async function getPosts(page = 1, size = 10) {
+export async function getPosts(page = 1, size = 10, keyword = '') {
   const response = await apiClient.get('/api/posts', {
     params: {
       page,
-      size
+      size,
+      keyword
     }
   });
   return response.data;

@@ -32,9 +32,10 @@ public class PostController {
 	@GetMapping
 	public PageResponse<Post> findPage(
 		@RequestParam(defaultValue = "1") int page,
-		@RequestParam(defaultValue = "10") int size
+		@RequestParam(defaultValue = "10") int size,
+		@RequestParam(defaultValue = "") String keyword
 	) {
-		return postService.findPage(page, size);
+		return postService.findPage(page, size, keyword);
 	}
 
 	@GetMapping("/{id}")
