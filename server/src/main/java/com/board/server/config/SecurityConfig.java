@@ -37,10 +37,12 @@ public class SecurityConfig {
 			.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests((authorize) -> authorize
 				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+				.requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
 				.requestMatchers("/api/members/signup", "/api/members/login").permitAll()
 				.requestMatchers(HttpMethod.POST, "/api/posts").authenticated()
 				.requestMatchers(HttpMethod.POST, "/api/posts/*/comments").authenticated()
+				.requestMatchers(HttpMethod.POST, "/api/uploads/images").authenticated()
 				.requestMatchers(HttpMethod.PUT, "/api/posts/**").authenticated()
 				.requestMatchers(HttpMethod.PUT, "/api/comments/**").authenticated()
 				.requestMatchers(HttpMethod.DELETE, "/api/posts/**").authenticated()

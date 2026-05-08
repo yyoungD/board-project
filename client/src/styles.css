@@ -214,6 +214,10 @@ textarea:focus {
   background: #ffffff;
 }
 
+.hidden-file-input {
+  display: none;
+}
+
 .editor-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -241,6 +245,12 @@ textarea:focus {
   color: #ffffff;
   border-color: #186f65;
   background: #186f65;
+}
+
+.editor-toolbar-button:disabled {
+  cursor: wait;
+  color: #9aa7af;
+  background: #eef2f4;
 }
 
 .rich-editor-content {

@@ -81,11 +81,10 @@ function EditPostPage({ member }) {
   }
 
   return (
-    <section className="page-section narrow-page">
+    <section className="page-section">
       <div className="page-title-row">
         <div>
-          <p className="eyebrow">게시글 수정</p>
-          <h1>글 수정</h1>
+          <h1>게시글 수정</h1>
         </div>
         <Link className="secondary-link" to={`/posts/${id}`}>
           상세

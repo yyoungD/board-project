@@ -35,7 +35,7 @@ function CreatePostPage({ member }) {
     setMessage('');
 
     if (!member) {
-      setMessage('로그인 후 글을 작성할 수 있습니다.');
+      setMessage('로그인해야 글을 작성할 수 있습니다.');
       setIsSaving(false);
       return;
     }
@@ -55,8 +55,8 @@ function CreatePostPage({ member }) {
 
   if (!member) {
     return (
-      <section className="page-section narrow-page">
-        <p className="empty-message">로그인 후 글을 작성할 수 있습니다.</p>
+      <section className="page-section">
+        <p className="empty-message">로그인해야 글을 작성할 수 있습니다.</p>
         <div className="form-actions">
           <Link className="secondary-link" to="/">
             목록
@@ -70,7 +70,7 @@ function CreatePostPage({ member }) {
   }
 
   return (
-    <section className="page-section narrow-page">
+    <section className="page-section">
       <div className="page-title-row">
         <div>
           <p className="eyebrow">게시글 작성</p>

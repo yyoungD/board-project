@@ -23,12 +23,14 @@ import {
   Unlink
 } from 'lucide-react';
 import React from 'react';
+import { uploadImage } from '../api/uploads.js';
 
-function ToolbarButton({ active, children, label, onClick }) {
+function ToolbarButton({ active, children, disabled = false, label, onClick }) {
   return (
     <button
       aria-label={label}
       className={active ? 'editor-toolbar-button active' : 'editor-toolbar-button'}
+      disabled={disabled}
       title={label}
       type="button"
       onClick={onClick}
@@ -39,6 +41,8 @@ function ToolbarButton({ active, children, label, onClick }) {
 }
 
 function RichTextEditor({ value, onChange }) {
+  const fileInputRef = React.useRef(null);
+  const [isUploadingImage, setIsUploadingImage] = React.useState(false);
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -94,16 +98,47 @@ function RichTextEditor({ value, onChange }) {
     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
   }
 
-  function addImage() {
-    const url = window.prompt('이미지 URL을 입력하세요.');
+  function openImagePicker() {
+    fileInputRef.current?.click();
+  }
 
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run();
+  async function handleImageChange(event) {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      window.alert('이미지 파일만 선택할 수 있습니다.');
+      return;
+    }
+
+    setIsUploadingImage(true);
+    try {
+      const uploadedImage = await uploadImage(file);
+      editor.chain().focus().setImage({ src: uploadedImage.url }).run();
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        '이미지 업로드에 실패했습니다.';
+      window.alert(message);
+    } finally {
+      setIsUploadingImage(false);
     }
   }
 
   return (
     <div className="rich-editor">
+      <input
+        ref={fileInputRef}
+        className="hidden-file-input"
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
+      />
       <div className="editor-toolbar">
         <ToolbarButton label="굵게" active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()}>
           <Bold size={16} />
@@ -141,7 +176,7 @@ function RichTextEditor({ value, onChange }) {
         <ToolbarButton label="링크 해제" onClick={() => editor.chain().focus().unsetLink().run()}>
           <Unlink size={16} />
         </ToolbarButton>
-        <ToolbarButton label="이미지 삽입" onClick={addImage}>
+        <ToolbarButton label={isUploadingImage ? '이미지 업로드 중' : '이미지 삽입'} disabled={isUploadingImage} onClick={openImagePicker}>
           <ImagePlus size={16} />
         </ToolbarButton>
         <ToolbarButton label="실행 취소" onClick={() => editor.chain().focus().undo().run()}>

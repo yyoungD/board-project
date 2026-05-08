@@ -93,7 +93,7 @@ function CommentSection({ postId, member }) {
           />
           <div className="comment-form-actions">
             <button className="primary-button" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? '등록 중' : '댓글 등록'}
+              {isSubmitting ? '등록 중' : '등록'}
             </button>
           </div>
         </form>
