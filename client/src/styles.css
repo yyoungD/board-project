@@ -173,6 +173,90 @@ textarea:focus {
   border-color: #1778b8;
 }
 
+.rich-editor {
+  overflow: hidden;
+  border: 1px solid #c8d2da;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  border-bottom: 1px solid #e3e8ec;
+  background: #f7f9fa;
+}
+
+.editor-toolbar-button {
+  width: 34px;
+  height: 32px;
+  border: 1px solid #c8d2da;
+  border-radius: 6px;
+  padding: 0;
+  color: #40515c;
+  background: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.editor-toolbar-button.active {
+  color: #ffffff;
+  border-color: #186f65;
+  background: #186f65;
+}
+
+.rich-editor-content {
+  min-height: 260px;
+  padding: 14px;
+  line-height: 1.7;
+  outline: 0;
+}
+
+.rich-editor-content p {
+  margin: 0 0 10px;
+}
+
+.rich-editor-content ul,
+.rich-editor-content ol,
+.rich-content ul,
+.rich-content ol {
+  padding-left: 24px;
+}
+
+.rich-editor-content blockquote,
+.rich-content blockquote {
+  margin: 12px 0;
+  border-left: 4px solid #c8d2da;
+  padding-left: 12px;
+  color: #52616b;
+}
+
+.rich-editor-content a,
+.rich-content a {
+  color: #145f58;
+  text-decoration: underline;
+}
+
+.rich-editor-content mark,
+.rich-content mark {
+  border-radius: 3px;
+  padding: 0 2px;
+  background: #fff59d;
+}
+
+.rich-editor-content img,
+.rich-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+  margin: 12px 0;
+}
+
 .primary-button,
 .secondary-button,
 .primary-link,
@@ -361,7 +445,10 @@ td:nth-child(3) {
 .post-content {
   min-height: 220px;
   line-height: 1.7;
-  white-space: pre-wrap;
+}
+
+.rich-content p {
+  margin: 0 0 10px;
 }
 
 @media (max-width: 720px) {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPost, getErrorMessage } from '../api/posts.js';
+import RichTextEditor from '../components/RichTextEditor.jsx';
 
 const emptyForm = {
   title: '',
@@ -18,6 +19,13 @@ function CreatePostPage({ member }) {
     setForm((currentForm) => ({
       ...currentForm,
       [name]: value
+    }));
+  }
+
+  function handleContentChange(content) {
+    setForm((currentForm) => ({
+      ...currentForm,
+      content
     }));
   }
 
@@ -90,16 +98,10 @@ function CreatePostPage({ member }) {
           <span className="author-display">{member.loginId}</span>
         </div>
 
-        <label>
-          내용
-          <textarea
-            name="content"
-            value={form.content}
-            onChange={handleChange}
-            rows="12"
-            required
-          />
-        </label>
+        <div className="field-block">
+          <span className="field-label">내용</span>
+          <RichTextEditor value={form.content} onChange={handleContentChange} />
+        </div>
 
         <div className="form-actions">
           <Link className="secondary-link" to="/">

@@ -54,7 +54,7 @@ function LoginPage({ onLogin }) {
       </div>
 
       <form className="post-form" onSubmit={handleSubmit} noValidate>
-        {message && <p className="status-message">{message}</p>}
+        
 
         <label>
           아이디
@@ -76,6 +76,7 @@ function LoginPage({ onLogin }) {
             required
           />
         </label>
+        {message && <p className="status-message">{message}</p>}
 
         <div className="form-actions">
           <Link className="secondary-link" to="/signup">

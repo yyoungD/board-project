@@ -9,8 +9,16 @@
     "preview": "vite preview --host 0.0.0.0"
   },
   "dependencies": {
+    "@tiptap/extension-highlight": "^3.22.5",
+    "@tiptap/extension-image": "^3.22.5",
+    "@tiptap/extension-link": "^3.22.5",
+    "@tiptap/extension-text-align": "^3.22.5",
+    "@tiptap/extension-underline": "^3.22.5",
+    "@tiptap/react": "^3.22.5",
+    "@tiptap/starter-kit": "^3.22.5",
     "@vitejs/plugin-react": "^5.1.2",
     "axios": "^1.16.0",
+    "lucide-react": "^1.14.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-router-dom": "^7.15.0",

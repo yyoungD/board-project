@@ -25,5 +25,13 @@ export async function deletePost(id) {
 }
 
 export function getErrorMessage(error, fallbackMessage) {
-  return error.response?.data?.message || error.message || fallbackMessage;
+  const responseData = error.response?.data;
+
+  return (
+    responseData?.message ||
+    responseData?.error ||
+    responseData?.detail ||
+    fallbackMessage ||
+    error.message
+  );
 }
