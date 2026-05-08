@@ -6,6 +6,8 @@ import java.util.List;
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,11 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.board.server.auth.AuthenticatedMember;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -43,9 +42,9 @@ public class PostController {
 	@PostMapping
 	public ResponseEntity<Post> create(
 		@Valid @RequestBody PostCreateRequest request,
-		@RequestAttribute("authenticatedMember") AuthenticatedMember member
+		@AuthenticationPrincipal Jwt jwt
 	) {
-		Post createdPost = postService.create(request, member.loginId());
+		Post createdPost = postService.create(request, jwt.getSubject());
 		return ResponseEntity
 			.created(URI.create("/api/posts/" + createdPost.getId()))
 			.body(createdPost);
@@ -55,17 +54,17 @@ public class PostController {
 	public Post update(
 		@PathVariable Long id,
 		@Valid @RequestBody PostUpdateRequest request,
-		@RequestAttribute("authenticatedMember") AuthenticatedMember member
+		@AuthenticationPrincipal Jwt jwt
 	) {
-		return postService.update(id, request, member.loginId());
+		return postService.update(id, request, jwt.getSubject());
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteById(
 		@PathVariable Long id,
-		@RequestAttribute("authenticatedMember") AuthenticatedMember member
+		@AuthenticationPrincipal Jwt jwt
 	) {
-		postService.deleteById(id, member.loginId());
+		postService.deleteById(id, jwt.getSubject());
 		return ResponseEntity.noContent().build();
 	}
 }
