@@ -40,8 +40,11 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
 				.requestMatchers("/api/members/signup", "/api/members/login").permitAll()
 				.requestMatchers(HttpMethod.POST, "/api/posts").authenticated()
+				.requestMatchers(HttpMethod.POST, "/api/posts/*/comments").authenticated()
 				.requestMatchers(HttpMethod.PUT, "/api/posts/**").authenticated()
+				.requestMatchers(HttpMethod.PUT, "/api/comments/**").authenticated()
 				.requestMatchers(HttpMethod.DELETE, "/api/posts/**").authenticated()
+				.requestMatchers(HttpMethod.DELETE, "/api/comments/**").authenticated()
 				.anyRequest().authenticated()
 			)
 			.oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));

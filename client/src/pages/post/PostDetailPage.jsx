@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { deletePost, getErrorMessage, getPost } from '../../api/posts.js';
+import CommentSection from '../../components/CommentSection.jsx';
 import { formatDateTime } from '../../utils/date.js';
 
 function PostDetailPage({ member }) {
@@ -50,7 +51,7 @@ function PostDetailPage({ member }) {
   }
 
   return (
-    <section className="page-section narrow-page">
+    <section className="page-section">
       <div className="page-title-row">
         <div>
           <p className="eyebrow">게시글 상세</p>
@@ -80,22 +81,25 @@ function PostDetailPage({ member }) {
       {isLoading ? (
         <p className="empty-message">불러오는 중입니다.</p>
       ) : post ? (
-        <article className="post-detail">
-          <dl className="post-meta">
-            <div>
-              <dt>작성자</dt>
-              <dd>{post.author}</dd>
-            </div>
-            <div>
-              <dt>작성일시</dt>
-              <dd>{formatDateTime(post.createdAt)}</dd>
-            </div>
-          </dl>
-          <div
-            className="post-content rich-content"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
-        </article>
+        <>
+          <article className="post-detail">
+            <dl className="post-meta">
+              <div>
+                <dt>작성자</dt>
+                <dd>{post.author}</dd>
+              </div>
+              <div>
+                <dt>작성일시</dt>
+                <dd>{formatDateTime(post.createdAt)}</dd>
+              </div>
+            </dl>
+            <div
+              className="post-content rich-content"
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
+          </article>
+          <CommentSection postId={id} member={member} />
+        </>
       ) : (
         <p className="empty-message">게시글을 찾을 수 없습니다.</p>
       )}

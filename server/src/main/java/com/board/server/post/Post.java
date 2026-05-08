@@ -9,6 +9,7 @@ public class Post {
 	private String author;
 	private String content;
 	private LocalDateTime createdAt;
+	private long commentCount;
 
 	public Long getId() {
 		return id;
@@ -48,5 +49,13 @@ public class Post {
 
 	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
+	}
+
+	public long getCommentCount() {
+		return commentCount;
+	}
+
+	public void setCommentCount(long commentCount) {
+		this.commentCount = commentCount;
 	}
 }

@@ -16,14 +16,19 @@ public interface PostMapper {
 
 	@Select("""
 		<script>
-		SELECT id, title, author, content, created_at
-		FROM posts
+		SELECT p.id, p.title, p.author, p.content, p.created_at,
+		       COUNT(c.id) AS comment_count
+		FROM posts p
+		LEFT JOIN comments c
+		  ON c.post_id = p.id
+		 AND c.deleted = FALSE
 		<where>
 			<if test="keyword != null and keyword != ''">
-				title ILIKE CONCAT('%', #{keyword}, '%')
+				p.title ILIKE CONCAT('%', #{keyword}, '%')
 			</if>
 		</where>
-		ORDER BY id DESC
+		GROUP BY p.id
+		ORDER BY p.id DESC
 		LIMIT #{size}
 		OFFSET #{offset}
 		</script>
@@ -48,9 +53,14 @@ public interface PostMapper {
 	long countAll(@Param("keyword") String keyword);
 
 	@Select("""
-		SELECT id, title, author, content, created_at
-		FROM posts
-		WHERE id = #{id}
+		SELECT p.id, p.title, p.author, p.content, p.created_at,
+		       COUNT(c.id) AS comment_count
+		FROM posts p
+		LEFT JOIN comments c
+		  ON c.post_id = p.id
+		 AND c.deleted = FALSE
+		WHERE p.id = #{id}
+		GROUP BY p.id
 		""")
 	Optional<Post> findById(Long id);
 

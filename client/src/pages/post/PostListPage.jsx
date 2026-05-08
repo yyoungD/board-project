@@ -100,6 +100,9 @@ function PostListPage({ member }) {
                     <td>
                       <Link className="title-link" to={`/posts/${post.id}`}>
                         {post.title}
+                        {post.commentCount > 0 && (
+                          <span className="comment-count">({post.commentCount})</span>
+                        )}
                       </Link>
                     </td>
                     <td>{post.author}</td>
