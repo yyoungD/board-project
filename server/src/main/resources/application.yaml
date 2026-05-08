@@ -22,6 +22,11 @@ jwt:
   secret: ${JWT_SECRET:board-local-development-secret-key-change-me}
   expiration-seconds: 7200
 
+aws:
+  s3:
+    bucket: ${AWS_S3_BUCKET:spring-boot-board-bucket}
+    region: ${AWS_REGION:ap-northeast-2}
+
 server:
   port: 8080
   error:

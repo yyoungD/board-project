@@ -1,10 +1,18 @@
 package com.board.server.upload;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api/uploads")
@@ -19,5 +27,16 @@ public class ImageUploadController {
 	@PostMapping("/images")
 	public ImageUploadResponse uploadImage(@RequestPart MultipartFile file) {
 		return imageUploadService.upload(file);
+	}
+
+	@GetMapping("/images/{storedName}")
+	public ResponseEntity<byte[]> downloadImage(@PathVariable String storedName) {
+		UploadedImage image = imageUploadService.download(storedName);
+
+		return ResponseEntity.ok()
+			.header(HttpHeaders.CONTENT_LENGTH, String.valueOf(image.contentLength()))
+			.contentType(MediaType.parseMediaType(image.contentType()))
+			.cacheControl(CacheControl.maxAge(30, TimeUnit.DAYS))
+			.body(image.content());
 	}
 }
