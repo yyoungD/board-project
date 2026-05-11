@@ -29,9 +29,9 @@ public class ImageUploadController {
 		return imageUploadService.upload(file);
 	}
 
-	@GetMapping("/images/{storedName}")
-	public ResponseEntity<byte[]> downloadImage(@PathVariable String storedName) {
-		UploadedImage image = imageUploadService.download(storedName);
+	@GetMapping("/images/{fileId}")
+	public ResponseEntity<byte[]> downloadImage(@PathVariable Long fileId) {
+		UploadedImage image = imageUploadService.download(fileId);
 
 		return ResponseEntity.ok()
 			.header(HttpHeaders.CONTENT_LENGTH, String.valueOf(image.contentLength()))

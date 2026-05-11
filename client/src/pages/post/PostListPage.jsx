@@ -1,4 +1,5 @@
 import React from 'react';
+import { ImageIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getErrorMessage, getPosts } from '../../api/posts.js';
 import Pagination from '../../components/Pagination.jsx';
@@ -100,6 +101,9 @@ function PostListPage({ member }) {
                     <td>
                       <Link className="title-link" to={`/posts/${post.id}`}>
                         {post.title}
+                        {post.hasImage && (
+                          <ImageIcon className="title-image-icon" size={15} aria-label="이미지 포함" />
+                        )}
                         {post.commentCount > 0 && (
                           <span className="comment-count">({post.commentCount})</span>
                         )}

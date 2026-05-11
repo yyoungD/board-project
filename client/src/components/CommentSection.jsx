@@ -37,6 +37,10 @@ function CommentSection({ postId, member }) {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    if (!member) {
+      return;
+    }
+
     if (!content.trim()) {
       return;
     }
@@ -84,22 +88,20 @@ function CommentSection({ postId, member }) {
 
       {message && <p className="status-message">{message}</p>}
 
-      {member ? (
-        <form className="comment-form" onSubmit={handleSubmit}>
-          <textarea
-            value={content}
-            onChange={(event) => setContent(event.target.value)}
-            placeholder="댓글을 입력하세요"
-          />
-          <div className="comment-form-actions">
-            <button className="primary-button" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? '등록 중' : '등록'}
-            </button>
-          </div>
-        </form>
-      ) : (
-        <p className="empty-message">로그인하면 댓글을 작성할 수 있습니다.</p>
-      )}
+      <form className="comment-form" onSubmit={handleSubmit}>
+        <textarea
+          value={member ? content : '로그인하면 댓글을 작성할 수 있습니다.'}
+          onChange={(event) => setContent(event.target.value)}
+          placeholder="댓글을 입력하세요"
+          readOnly={!member}
+          aria-readonly={!member}
+        />
+        <div className="comment-form-actions">
+          <button className="primary-button" type="submit" disabled={!member || isSubmitting}>
+            {isSubmitting ? '등록 중' : '등록'}
+          </button>
+        </div>
+      </form>
 
       {isLoading ? (
         <p className="empty-message">댓글을 불러오는 중입니다.</p>

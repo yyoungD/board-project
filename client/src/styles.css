@@ -495,6 +495,9 @@ td:nth-child(3) {
 }
 
 .title-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: #145f58;
 }
 
@@ -503,10 +506,14 @@ td:nth-child(3) {
 }
 
 .comment-count {
-  margin-left: 6px;
   color: #b3261e;
   font-size: 13px;
   font-weight: 800;
+}
+
+.title-image-icon {
+  flex: 0 0 auto;
+  color: #52616b;
 }
 
 .pagination {
@@ -624,6 +631,7 @@ td:nth-child(3) {
 .comment-edit-form textarea,
 .comment-reply-form textarea {
   min-height: 86px;
+  resize: none;
 }
 
 .comment-form-actions,

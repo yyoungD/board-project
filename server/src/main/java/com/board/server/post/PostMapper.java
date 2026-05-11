@@ -17,7 +17,12 @@ public interface PostMapper {
 	@Select("""
 		<script>
 		SELECT p.id, p.title, p.author, p.content, p.created_at,
-		       COUNT(c.id) AS comment_count
+		       COUNT(c.id) AS comment_count,
+		       EXISTS (
+		           SELECT 1
+		           FROM files f
+		           WHERE f.post_id = p.id
+		       ) AS has_image
 		FROM posts p
 		LEFT JOIN comments c
 		  ON c.post_id = p.id
@@ -54,7 +59,12 @@ public interface PostMapper {
 
 	@Select("""
 		SELECT p.id, p.title, p.author, p.content, p.created_at,
-		       COUNT(c.id) AS comment_count
+		       COUNT(c.id) AS comment_count,
+		       EXISTS (
+		           SELECT 1
+		           FROM files f
+		           WHERE f.post_id = p.id
+		       ) AS has_image
 		FROM posts p
 		LEFT JOIN comments c
 		  ON c.post_id = p.id

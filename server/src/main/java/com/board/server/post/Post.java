@@ -10,6 +10,7 @@ public class Post {
 	private String content;
 	private LocalDateTime createdAt;
 	private long commentCount;
+	private boolean hasImage;
 
 	public Long getId() {
 		return id;
@@ -57,5 +58,13 @@ public class Post {
 
 	public void setCommentCount(long commentCount) {
 		this.commentCount = commentCount;
+	}
+
+	public boolean isHasImage() {
+		return hasImage;
+	}
+
+	public void setHasImage(boolean hasImage) {
+		this.hasImage = hasImage;
 	}
 }

@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.board.server.config.S3Properties;
+import com.board.server.postfile.PostFile;
+import com.board.server.postfile.PostFileMapper;
 
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -32,10 +34,12 @@ public class ImageUploadService {
 
 	private final S3Client s3Client;
 	private final S3Properties s3Properties;
+	private final PostFileMapper postFileMapper;
 
-	public ImageUploadService(S3Client s3Client, S3Properties s3Properties) {
+	public ImageUploadService(S3Client s3Client, S3Properties s3Properties, PostFileMapper postFileMapper) {
 		this.s3Client = s3Client;
 		this.s3Properties = s3Properties;
+		this.postFileMapper = postFileMapper;
 	}
 
 	public ImageUploadResponse upload(MultipartFile file) {
@@ -56,8 +60,16 @@ public class ImageUploadService {
 
 			s3Client.putObject(request, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 
+			PostFile postFile = new PostFile();
+			postFile.setOriginalName(originalName);
+			postFile.setStoredName(storedName);
+			postFile.setFilePath(key);
+			postFile.setContentType(file.getContentType());
+			postFile.setFileSize(file.getSize());
+			postFileMapper.insert(postFile);
+
 			return new ImageUploadResponse(
-				"/api/uploads/images/" + storedName,
+				"/api/uploads/images/" + postFile.getId(),
 				originalName,
 				file.getSize()
 			);
@@ -66,13 +78,14 @@ public class ImageUploadService {
 		}
 	}
 
-	public UploadedImage download(String storedName) {
-		String key = "images/" + storedName;
+	public UploadedImage download(Long fileId) {
+		PostFile postFile = postFileMapper.findById(fileId)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "이미지를 찾을 수 없습니다."));
 
 		try {
 			GetObjectRequest request = GetObjectRequest.builder()
 				.bucket(s3Properties.bucket())
-				.key(key)
+				.key(postFile.getFilePath())
 				.build();
 			ResponseBytes<GetObjectResponse> object = s3Client.getObjectAsBytes(request);
 
