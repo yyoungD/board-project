@@ -46,7 +46,6 @@ function PostListPage({ member }) {
     <section className="page-section">
       <div className="page-title-row">
         <div>
-          <p className="eyebrow">게시글 목록</p>
           <h1>전체 게시글</h1>
         </div>
         <div className="list-actions">

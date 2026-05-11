@@ -138,12 +138,20 @@ function CommentItem({ comment, member, onReply, onUpdate, onDelete }) {
   const [replyContent, setReplyContent] = React.useState('');
   const [editContent, setEditContent] = React.useState(comment.content);
   const [message, setMessage] = React.useState('');
+  const replyTextareaRef = React.useRef(null);
   const isOwner = Boolean(member && member.loginId === comment.author);
   const canChange = isOwner && !comment.deleted;
 
   React.useEffect(() => {
     setEditContent(comment.content);
   }, [comment.content]);
+
+  React.useEffect(() => {
+    if (isReplying) {
+      setReplyContent((currentContent) => currentContent || `@${comment.author} `);
+      replyTextareaRef.current?.focus();
+    }
+  }, [comment.author, isReplying]);
 
   async function submitReply(event) {
     event.preventDefault();
@@ -252,7 +260,7 @@ function CommentItem({ comment, member, onReply, onUpdate, onDelete }) {
             </div>
           </form>
         ) : (
-          <p className="comment-content">{comment.content}</p>
+          <p className="comment-content">{renderCommentContent(comment.content)}</p>
         )}
 
         {message && <p className="field-error">{message}</p>}
@@ -272,6 +280,7 @@ function CommentItem({ comment, member, onReply, onUpdate, onDelete }) {
         {isReplying && (
           <form className="comment-reply-form" onSubmit={submitReply}>
             <textarea
+              ref={replyTextareaRef}
               value={replyContent}
               onChange={(event) => setReplyContent(event.target.value)}
               placeholder="답글을 입력하세요"
@@ -308,6 +317,20 @@ function CommentItem({ comment, member, onReply, onUpdate, onDelete }) {
       )}
     </div>
   );
+}
+
+function renderCommentContent(content) {
+  return content.split(/(@[A-Za-z0-9_]+)/g).map((part, index) => {
+    if (part.startsWith('@')) {
+      return (
+        <span key={`${part}-${index}`} className="mention-text">
+          {part}
+        </span>
+      );
+    }
+
+    return part;
+  });
 }
 
 export default CommentSection;

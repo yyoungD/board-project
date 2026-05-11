@@ -1,4 +1,5 @@
 import React from 'react';
+import { User } from 'lucide-react';
 import { Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import LoginPage from './pages/member/LoginPage.jsx';
 import MyPage from './pages/member/MyPage.jsx';
@@ -38,10 +39,12 @@ function App() {
           게시판
         </Link>
         <nav>
-          <Link to="/">목록</Link>
           {member ? (
             <>
-              <Link to="/mypage">마이페이지</Link>
+              <Link className="nav-icon-link" to="/mypage">
+                <User size={17} aria-hidden="true" />
+                <span>My Page</span>
+              </Link>
               <button className="nav-text-button" type="button" onClick={handleLogout}>
                 로그아웃
               </button>

@@ -94,10 +94,15 @@ nav a {
   min-height: 38px;
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   border-radius: 6px;
   padding: 0 13px;
   color: #40515c;
   font-weight: 700;
+}
+
+.nav-icon-link svg {
+  flex: 0 0 auto;
 }
 
 .nav-text-button {
@@ -760,6 +765,11 @@ th:nth-child(4) {
   margin-bottom: 10px;
   line-height: 1.6;
   white-space: pre-wrap;
+}
+
+.mention-text {
+  color: #2563a8;
+  font-weight: 700;
 }
 
 .comment-item.deleted .comment-content {
