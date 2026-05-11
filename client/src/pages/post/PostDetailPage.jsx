@@ -92,6 +92,10 @@ function PostDetailPage({ member }) {
                 <dt>작성일시</dt>
                 <dd>{formatDateTime(post.createdAt)}</dd>
               </div>
+              <div className="post-meta-views">
+                <dt>조회수</dt>
+                <dd>{post.viewCount}</dd>
+              </div>
             </dl>
             <div
               className="post-content rich-content"

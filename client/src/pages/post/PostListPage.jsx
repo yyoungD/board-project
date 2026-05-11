@@ -93,6 +93,7 @@ function PostListPage({ member }) {
                   <th>제목</th>
                   <th>작성자</th>
                   <th>작성일시</th>
+                  <th>조회수</th>
                 </tr>
               </thead>
               <tbody>
@@ -111,6 +112,7 @@ function PostListPage({ member }) {
                     </td>
                     <td>{post.author}</td>
                     <td>{formatDateTime(post.createdAt)}</td>
+                    <td>{post.viewCount}</td>
                   </tr>
                 ))}
               </tbody>

@@ -16,7 +16,7 @@ public interface PostMapper {
 
 	@Select("""
 		<script>
-		SELECT p.id, p.title, p.author, p.content, p.created_at,
+		SELECT p.id, p.title, p.author, p.content, p.created_at, p.view_count,
 		       COUNT(c.id) AS comment_count,
 		       EXISTS (
 		           SELECT 1
@@ -58,7 +58,7 @@ public interface PostMapper {
 	long countAll(@Param("keyword") String keyword);
 
 	@Select("""
-		SELECT p.id, p.title, p.author, p.content, p.created_at,
+		SELECT p.id, p.title, p.author, p.content, p.created_at, p.view_count,
 		       COUNT(c.id) AS comment_count,
 		       EXISTS (
 		           SELECT 1
@@ -94,4 +94,11 @@ public interface PostMapper {
 		WHERE id = #{id}
 		""")
 	int deleteById(Long id);
+
+	@Update("""
+		UPDATE posts
+		SET view_count = view_count + 1
+		WHERE id = #{id}
+		""")
+	int incrementViewCount(Long id);
 }

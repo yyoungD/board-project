@@ -11,6 +11,7 @@ public class Post {
 	private LocalDateTime createdAt;
 	private long commentCount;
 	private boolean hasImage;
+	private long viewCount;
 
 	public Long getId() {
 		return id;
@@ -66,5 +67,13 @@ public class Post {
 
 	public void setHasImage(boolean hasImage) {
 		this.hasImage = hasImage;
+	}
+
+	public long getViewCount() {
+		return viewCount;
+	}
+
+	public void setViewCount(long viewCount) {
+		this.viewCount = viewCount;
 	}
 }

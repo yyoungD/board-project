@@ -1,5 +1,6 @@
 package com.board.server.post;
 
+import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -22,19 +23,23 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 public class PostService {
 
 	private static final Pattern IMAGE_URL_PATTERN = Pattern.compile("/api/uploads/images/(\\d+)");
+	private static final int VIEW_COUNT_INTERVAL_HOURS = 24;
 
 	private final PostMapper postMapper;
+	private final PostViewMapper postViewMapper;
 	private final PostFileMapper postFileMapper;
 	private final S3Client s3Client;
 	private final S3Properties s3Properties;
 
 	public PostService(
 		PostMapper postMapper,
+		PostViewMapper postViewMapper,
 		PostFileMapper postFileMapper,
 		S3Client s3Client,
 		S3Properties s3Properties
 	) {
 		this.postMapper = postMapper;
+		this.postViewMapper = postViewMapper;
 		this.postFileMapper = postFileMapper;
 		this.s3Client = s3Client;
 		this.s3Properties = s3Properties;
@@ -58,6 +63,21 @@ public class PostService {
 	public Post findById(Long id) {
 		return postMapper.findById(id)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+	}
+
+	@Transactional
+	public Post findByIdAndCountView(Long id, String viewerKey) {
+		Post post = findById(id);
+		LocalDateTime viewedAfter = LocalDateTime.now().minusHours(VIEW_COUNT_INTERVAL_HOURS);
+		boolean recentlyViewed = postViewMapper.countRecentView(id, viewerKey, viewedAfter) > 0;
+
+		if (!recentlyViewed) {
+			postViewMapper.saveView(id, viewerKey);
+			postMapper.incrementViewCount(id);
+			return findById(id);
+		}
+
+		return post;
 	}
 
 	@Transactional
