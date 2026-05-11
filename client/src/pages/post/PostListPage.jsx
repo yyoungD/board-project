@@ -100,7 +100,7 @@ function PostListPage({ member }) {
                   <tr key={post.id}>
                     <td>
                       <Link className="title-link" to={`/posts/${post.id}`}>
-                        {post.title}
+                        {highlightSearchTerm(post.title, keyword)}
                         {post.hasImage && (
                           <ImageIcon className="title-image-icon" size={15} aria-label="이미지 포함" />
                         )}
@@ -122,6 +122,28 @@ function PostListPage({ member }) {
       )}
     </section>
   );
+}
+
+function highlightSearchTerm(text, keyword) {
+  const trimmedKeyword = keyword.trim();
+  if (!trimmedKeyword) {
+    return text;
+  }
+
+  const escapedKeyword = trimmedKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const pattern = new RegExp(`(${escapedKeyword})`, 'gi');
+
+  return text.split(pattern).map((part, index) => {
+    if (part.toLowerCase() === trimmedKeyword.toLowerCase()) {
+      return (
+        <mark key={`${part}-${index}`} className="search-highlight">
+          {part}
+        </mark>
+      );
+    }
+
+    return part;
+  });
 }
 
 export default PostListPage;

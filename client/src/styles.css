@@ -521,6 +521,7 @@ th:nth-child(4) {
 }
 
 .comment-count {
+  margin-left: 5px;
   color: #b3261e;
   font-size: 13px;
   font-weight: 800;
@@ -529,6 +530,13 @@ th:nth-child(4) {
 .title-image-icon {
   flex: 0 0 auto;
   color: #52616b;
+}
+
+.search-highlight {
+  border-radius: 3px;
+  padding: 0 2px;
+  color: inherit;
+  background: #fff1a8;
 }
 
 .pagination {
