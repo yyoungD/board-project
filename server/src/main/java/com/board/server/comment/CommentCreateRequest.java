@@ -6,8 +6,8 @@ import jakarta.validation.constraints.Size;
 public record CommentCreateRequest(
 	Long parentId,
 
-	@NotBlank
-	@Size(max = 2000)
+	@NotBlank(message = "댓글 내용을 입력해 주세요.")
+	@Size(max = 2000, message = "댓글은 2000자 이하로 입력해 주세요.")
 	String content
 ) {
 }

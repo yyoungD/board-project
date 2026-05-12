@@ -62,7 +62,7 @@ public class PostService {
 	@Transactional(readOnly = true)
 	public Post findById(Long id) {
 		return postMapper.findById(id)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
 	}
 
 	@Transactional
@@ -101,7 +101,7 @@ public class PostService {
 
 		int updatedRows = postMapper.update(id, request);
 		if (updatedRows == 0) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다.");
 		}
 		postFileMapper.detachByPostId(id);
 		attachImages(id, request.content());
@@ -121,7 +121,7 @@ public class PostService {
 
 		int deletedRows = postMapper.deleteById(id);
 		if (deletedRows == 0) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다.");
 		}
 
 		deleteImagesFromS3(imagePaths);

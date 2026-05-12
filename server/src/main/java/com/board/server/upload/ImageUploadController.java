@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -32,10 +33,11 @@ public class ImageUploadController {
 	@GetMapping("/images/{fileId}")
 	public ResponseEntity<byte[]> downloadImage(@PathVariable Long fileId) {
 		UploadedImage image = imageUploadService.download(fileId);
+		String contentType = Objects.requireNonNullElse(image.contentType(), MediaType.APPLICATION_OCTET_STREAM_VALUE);
 
 		return ResponseEntity.ok()
 			.header(HttpHeaders.CONTENT_LENGTH, String.valueOf(image.contentLength()))
-			.contentType(MediaType.parseMediaType(image.contentType()))
+			.contentType(MediaType.parseMediaType(contentType))
 			.cacheControl(CacheControl.maxAge(30, TimeUnit.DAYS))
 			.body(image.content());
 	}

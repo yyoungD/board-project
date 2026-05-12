@@ -62,7 +62,7 @@ public class CommentService {
 
 		int updatedRows = commentMapper.updateContent(id, request.content());
 		if (updatedRows == 0) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다.");
 		}
 		return toResponse(findComment(id), List.of());
 	}
@@ -74,19 +74,19 @@ public class CommentService {
 
 		int updatedRows = commentMapper.markDeleted(id);
 		if (updatedRows == 0) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다.");
 		}
 		return toResponse(findComment(id), List.of());
 	}
 
 	private void ensurePostExists(Long postId) {
 		postMapper.findById(postId)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
 	}
 
 	private Comment findComment(Long id) {
 		return commentMapper.findById(id)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."));
 	}
 
 	private void validateOwner(Comment comment, String loginId, String message) {

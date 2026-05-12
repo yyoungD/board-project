@@ -1,5 +1,6 @@
 package com.board.server.config;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -9,6 +10,8 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -23,14 +26,19 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.board.server.common.ErrorResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectMapper objectMapper) throws Exception {
 		http
 			.csrf((csrf) -> csrf.disable())
 			.cors(Customizer.withDefaults())
@@ -50,9 +58,35 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.DELETE, "/api/comments/**").authenticated()
 				.anyRequest().authenticated()
 			)
-			.oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
+			.exceptionHandling((exceptions) -> exceptions
+				.authenticationEntryPoint((request, response, exception) ->
+					writeErrorResponse(objectMapper, request, response, HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."))
+				.accessDeniedHandler((request, response, exception) ->
+					writeErrorResponse(objectMapper, request, response, HttpStatus.FORBIDDEN, "접근 권한이 없습니다."))
+			)
+			.oauth2ResourceServer((oauth2) -> oauth2
+				.jwt(Customizer.withDefaults())
+				.authenticationEntryPoint((request, response, exception) ->
+					writeErrorResponse(objectMapper, request, response, HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."))
+			);
 
 		return http.build();
+	}
+
+	private void writeErrorResponse(
+		ObjectMapper objectMapper,
+		HttpServletRequest request,
+		HttpServletResponse response,
+		HttpStatus status,
+		String message
+	) throws IOException {
+		response.setStatus(status.value());
+		response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		objectMapper.writeValue(
+			response.getWriter(),
+			ErrorResponse.of(status, status.getReasonPhrase(), message, request)
+		);
 	}
 
 	@Bean
