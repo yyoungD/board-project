@@ -20,6 +20,10 @@ services:
       DB_USERNAME: board
       DB_PASSWORD: board_password
       JWT_SECRET: change-this-to-a-long-random-secret
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
     depends_on:
       - postgres
     ports:
