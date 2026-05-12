@@ -1,0 +1,19 @@
+name: Deploy to Rocky VM
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Deploy existing app directory
+        run: |
+          cd ~/apps/board
+          git pull
+          docker compose up -d --build
+          docker compose ps
