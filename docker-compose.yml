@@ -11,5 +11,31 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  server:
+    build:
+      context: ./server
+    container_name: board-server
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/board
+      DB_USERNAME: board
+      DB_PASSWORD: board_password
+      JWT_SECRET: change-this-to-a-long-random-secret
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    volumes:
+      - server_uploads:/app/uploads
+
+  client:
+    build:
+      context: ./client
+    container_name: board-client
+    depends_on:
+      - server
+    ports:
+      - "3000:80"
+
 volumes:
   postgres_data:
+  server_uploads:
