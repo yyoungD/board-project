@@ -15,9 +15,9 @@ import com.board.server.config.S3Properties;
 import com.board.server.postfile.PostFile;
 import com.board.server.postfile.PostFileMapper;
 
+import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Exception;
 
 @Service
 public class PostService {
@@ -151,7 +151,7 @@ public class PostService {
 					.key(imagePath)
 					.build();
 				s3Client.deleteObject(request);
-			} catch (S3Exception exception) {
+			} catch (SdkException exception) {
 				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 삭제에 실패했습니다.");
 			}
 		}

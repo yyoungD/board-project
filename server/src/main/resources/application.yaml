@@ -1,6 +1,10 @@
 spring:
   application:
     name: server
+  config:
+    import:
+      - optional:file:.env[.properties]
+      - optional:file:server/.env[.properties]
   datasource:
     url: ${DB_URL:jdbc:postgresql://192.168.48.128:5432/boarddb}
     username: ${DB_USERNAME:board}
@@ -26,6 +30,9 @@ aws:
   s3:
     bucket: ${AWS_S3_BUCKET:spring-boot-board-bucket}
     region: ${AWS_REGION:ap-northeast-2}
+    access-key-id: ${AWS_ACCESS_KEY_ID:}
+    secret-access-key: ${AWS_SECRET_ACCESS_KEY:}
+    session-token: ${AWS_SESSION_TOKEN:}
 
 server:
   port: 8080

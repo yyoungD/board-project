@@ -14,13 +14,13 @@ import com.board.server.postfile.PostFile;
 import com.board.server.postfile.PostFileMapper;
 
 import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Exception;
 
 @Service
 public class ImageUploadService {
@@ -73,7 +73,7 @@ public class ImageUploadService {
 				originalName,
 				file.getSize()
 			);
-		} catch (IOException | S3Exception exception) {
+		} catch (IOException | SdkException exception) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다.");
 		}
 	}
@@ -96,7 +96,7 @@ public class ImageUploadService {
 			);
 		} catch (NoSuchKeyException exception) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "이미지를 찾을 수 없습니다.");
-		} catch (S3Exception exception) {
+		} catch (SdkException exception) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "이미지를 불러오지 못했습니다.");
 		}
 	}
