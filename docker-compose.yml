@@ -6,6 +6,9 @@ services:
       POSTGRES_DB: board
       POSTGRES_USER: board
       POSTGRES_PASSWORD: board_password
+      TZ: Asia/Seoul
+      PGTZ: Asia/Seoul
+    command: ["postgres", "-c", "timezone=Asia/Seoul"]
     ports:
       - "15432:5432"
     volumes:
@@ -16,10 +19,12 @@ services:
       context: ./server
     container_name: board-server
     environment:
-      DB_URL: jdbc:postgresql://postgres:5432/board
+      DB_URL: jdbc:postgresql://postgres:5432/board?options=-c%20TimeZone=Asia/Seoul
       DB_USERNAME: board
       DB_PASSWORD: board_password
       JWT_SECRET: change-this-to-a-long-random-secret
+      TZ: Asia/Seoul
+      JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Seoul
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_REGION: ${AWS_REGION}

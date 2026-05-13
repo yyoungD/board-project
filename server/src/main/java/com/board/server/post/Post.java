@@ -1,6 +1,9 @@
 package com.board.server.post;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.board.server.postfile.PostFile;
 
 public class Post {
 
@@ -12,6 +15,7 @@ public class Post {
 	private long commentCount;
 	private boolean hasImage;
 	private long viewCount;
+	private List<PostFile> files = List.of();
 
 	public Long getId() {
 		return id;
@@ -75,5 +79,13 @@ public class Post {
 
 	public void setViewCount(long viewCount) {
 		this.viewCount = viewCount;
+	}
+
+	public List<PostFile> getFiles() {
+		return files;
+	}
+
+	public void setFiles(List<PostFile> files) {
+		this.files = files == null ? List.of() : files;
 	}
 }

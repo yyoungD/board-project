@@ -101,6 +101,19 @@ function PostDetailPage({ member }) {
               className="post-content rich-content"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
+            {post.files?.length > 0 && (
+              <section className="post-attachments">
+                <h2>첨부파일</h2>
+                <ul className="attachment-list">
+                  {post.files.map((file) => (
+                    <li key={file.id}>
+                      <a href={`/api/uploads/files/${file.id}`}>{file.originalName}</a>
+                      <small>{formatFileSize(file.fileSize || 0)}</small>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
           </article>
           <CommentSection postId={id} member={member} />
         </>
@@ -113,6 +126,18 @@ function PostDetailPage({ member }) {
       </Link>
     </section>
   );
+}
+
+function formatFileSize(size) {
+  if (size < 1024) {
+    return `${size} B`;
+  }
+
+  if (size < 1024 * 1024) {
+    return `${(size / 1024).toFixed(1)} KB`;
+  }
+
+  return `${(size / 1024 / 1024).toFixed(1)} MB`;
 }
 
 export default PostDetailPage;

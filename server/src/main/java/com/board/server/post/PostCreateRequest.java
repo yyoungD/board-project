@@ -1,5 +1,7 @@
 package com.board.server.post;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -9,6 +11,8 @@ public record PostCreateRequest(
 	String title,
 
 	@NotBlank(message = "내용을 입력해 주세요.")
-	String content
+	String content,
+
+	List<Long> fileIds
 ) {
 }

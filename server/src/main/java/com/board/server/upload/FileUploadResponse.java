@@ -1,6 +1,6 @@
 package com.board.server.upload;
 
-public record ImageUploadResponse(
+public record FileUploadResponse(
 	Long id,
 	String url,
 	String originalName,

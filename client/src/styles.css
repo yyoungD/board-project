@@ -399,6 +399,136 @@ textarea:focus {
   gap: 10px;
 }
 
+.attachment-picker {
+  min-height: 56px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+  border: 1px solid #c8d2da;
+  border-radius: 6px;
+  padding: 8px;
+  background: #ffffff;
+}
+
+.file-upload-button {
+  min-height: 38px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 6px;
+  padding: 0 14px;
+  color: #172026;
+  background: #e9edf0;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.file-upload-button:hover {
+  background: #dde3e7;
+  box-shadow: 0 1px 3px rgba(23, 32, 38, 0.12);
+}
+
+.attachment-inline-list {
+  min-height: 38px;
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.attachment-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.attachment-list li {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e3e8ec;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #34434d;
+  background: #f7f9fa;
+}
+
+.attachment-list span,
+.attachment-list a {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+  color: #172026;
+  font-weight: 400;
+}
+
+.attachment-list small {
+  flex: 0 0 auto;
+  color: #667780;
+}
+
+.attachment-list button {
+  min-height: 30px;
+  flex: 0 0 auto;
+  border: 1px solid #c8d2da;
+  border-radius: 6px;
+  padding: 0 10px;
+  color: #40515c;
+  background: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.attachment-chip {
+  min-height: 38px;
+  max-width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #d9e0e6;
+  border-radius: 6px;
+  padding: 6px 8px;
+  color: #34434d;
+  background: #f7f9fa;
+}
+
+.attachment-chip span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 400;
+}
+
+.attachment-chip small {
+  flex: 0 0 auto;
+  color: #667780;
+}
+
+.attachment-chip button {
+  min-height: 26px;
+  flex: 0 0 auto;
+  border: 1px solid #c8d2da;
+  border-radius: 6px;
+  padding: 0 8px;
+  color: #40515c;
+  background: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .page-actions {
   display: flex;
   align-items: center;
@@ -609,6 +739,22 @@ th:nth-child(4) {
 .post-content {
   min-height: 220px;
   line-height: 1.7;
+}
+
+.post-attachments {
+  display: grid;
+  gap: 10px;
+  border-top: 1px solid #e3e8ec;
+  padding-top: 18px;
+}
+
+.post-attachments h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.post-attachments .attachment-list a:hover {
+  text-decoration: underline;
 }
 
 .rich-content p {

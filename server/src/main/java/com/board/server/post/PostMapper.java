@@ -22,6 +22,7 @@ public interface PostMapper {
 		           SELECT 1
 		           FROM files f
 		           WHERE f.post_id = p.id
+		             AND f.file_path LIKE 'images/%'
 		       ) AS has_image
 		FROM posts p
 		LEFT JOIN comments c
@@ -64,6 +65,7 @@ public interface PostMapper {
 		           SELECT 1
 		           FROM files f
 		           WHERE f.post_id = p.id
+		             AND f.file_path LIKE 'images/%'
 		       ) AS has_image
 		FROM posts p
 		LEFT JOIN comments c

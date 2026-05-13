@@ -1,5 +1,6 @@
 package com.board.server.postfile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,25 @@ public interface PostFileMapper {
 	@Select("""
 		SELECT id, post_id, original_name, stored_name, file_path, content_type, file_size, created_at
 		FROM files
+		WHERE post_id = #{postId}
+		  AND file_path LIKE 'files/%'
+		ORDER BY id ASC
+	""")
+	List<PostFile> findAttachmentsByPostId(Long postId);
+
+	@Select("""
+		SELECT id, post_id, original_name, stored_name, file_path, content_type, file_size, created_at
+		FROM files
+		WHERE post_id IS NULL
+		  AND (file_path LIKE 'files/%' OR file_path LIKE 'images/%')
+		  AND created_at < #{createdBefore}
+		ORDER BY id ASC
+		""")
+	List<PostFile> findUnattachedFilesCreatedBefore(LocalDateTime createdBefore);
+
+	@Select("""
+		SELECT id, post_id, original_name, stored_name, file_path, content_type, file_size, created_at
+		FROM files
 		WHERE id = #{id}
 		""")
 	Optional<PostFile> findById(Long id);
@@ -41,6 +61,12 @@ public interface PostFileMapper {
 		WHERE post_id = #{postId}
 		""")
 	int deleteByPostId(Long postId);
+
+	@Delete("""
+		DELETE FROM files
+		WHERE id = #{id}
+		""")
+	int deleteById(Long id);
 
 	@Update("""
 		UPDATE files

@@ -69,6 +69,7 @@ public class ImageUploadService {
 			postFileMapper.insert(postFile);
 
 			return new ImageUploadResponse(
+				postFile.getId(),
 				"/api/uploads/images/" + postFile.getId(),
 				originalName,
 				file.getSize()

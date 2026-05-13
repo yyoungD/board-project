@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPost, getErrorMessage } from '../../api/posts.js';
+import AttachmentFileField from '../../components/AttachmentFileField.jsx';
 import RichTextEditor from '../../components/RichTextEditor.jsx';
 
 const emptyForm = {
@@ -11,6 +12,7 @@ const emptyForm = {
 function CreatePostPage({ member }) {
   const navigate = useNavigate();
   const [form, setForm] = React.useState(emptyForm);
+  const [files, setFiles] = React.useState([]);
   const [isSaving, setIsSaving] = React.useState(false);
   const [message, setMessage] = React.useState('');
 
@@ -43,7 +45,8 @@ function CreatePostPage({ member }) {
     try {
       const createdPost = await createPost({
         title: form.title,
-        content: form.content
+        content: form.content,
+        fileIds: files.map((file) => file.id)
       });
       navigate(`/posts/${createdPost.id}`);
     } catch (error) {
@@ -73,8 +76,7 @@ function CreatePostPage({ member }) {
     <section className="page-section">
       <div className="page-title-row">
         <div>
-          <p className="eyebrow">게시글 작성</p>
-          <h1>새 글 쓰기</h1>
+          <h1>게시글 작성</h1>
         </div>
       </div>
 
@@ -101,6 +103,13 @@ function CreatePostPage({ member }) {
           <span className="field-label">내용</span>
           <RichTextEditor value={form.content} onChange={handleContentChange} />
         </div>
+
+        <AttachmentFileField
+          files={files}
+          onChange={setFiles}
+          onError={setMessage}
+          disabled={isSaving}
+        />
 
         <div className="form-actions">
           <Link className="secondary-link" to="/">

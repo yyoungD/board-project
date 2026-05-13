@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getErrorMessage, getPost, updatePost } from '../../api/posts.js';
+import AttachmentFileField from '../../components/AttachmentFileField.jsx';
 import RichTextEditor from '../../components/RichTextEditor.jsx';
 
 const emptyForm = {
@@ -13,6 +14,7 @@ function EditPostPage({ member }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [form, setForm] = React.useState(emptyForm);
+  const [files, setFiles] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isSaving, setIsSaving] = React.useState(false);
   const [message, setMessage] = React.useState('');
@@ -30,6 +32,7 @@ function EditPostPage({ member }) {
           author: post.author,
           content: post.content
         });
+        setFiles(post.files || []);
         setCanEdit(Boolean(member && post.author === member.loginId));
       } catch (error) {
         setMessage(getErrorMessage(error, '게시글을 불러오지 못했습니다.'));
@@ -70,7 +73,8 @@ function EditPostPage({ member }) {
     try {
       const updatedPost = await updatePost(id, {
         title: form.title,
-        content: form.content
+        content: form.content,
+        fileIds: files.map((file) => file.id)
       });
       navigate(`/posts/${updatedPost.id}`);
     } catch (error) {
@@ -119,6 +123,13 @@ function EditPostPage({ member }) {
             <span className="field-label">내용</span>
             <RichTextEditor value={form.content} onChange={handleContentChange} />
           </div>
+
+          <AttachmentFileField
+            files={files}
+            onChange={setFiles}
+            onError={setMessage}
+            disabled={isSaving}
+          />
 
           <div className="form-actions">
             <Link className="secondary-link" to={`/posts/${id}`}>
