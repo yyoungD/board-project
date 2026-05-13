@@ -99,6 +99,11 @@ nav a {
   padding: 0 13px;
   color: #40515c;
   font-weight: 700;
+  transition: background-color 180ms ease;
+}
+
+nav a:hover {
+  background: #e6ebef;
 }
 
 .nav-icon-link svg {
@@ -114,6 +119,11 @@ nav a {
   background: transparent;
   font-weight: 700;
   cursor: pointer;
+  transition: background-color 180ms ease;
+}
+
+.nav-text-button:hover {
+  background: #e6ebef;
 }
 
 .nav-button,
@@ -121,6 +131,17 @@ nav a {
 .primary-button {
   color: #ffffff;
   background: #186f65;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.primary-link:hover,
+.primary-button:hover:not(:disabled) {
+  color: #ffffff;
+  background: #11574f;
+  box-shadow: 0 1px 3px rgba(23, 32, 38, 0.12);
 }
 
 .page-section {
@@ -297,6 +318,22 @@ textarea:focus {
   background: #eef2f4;
 }
 
+.editor-toolbar-select {
+  height: 32px;
+  border: 1px solid #c8d2da;
+  border-radius: 6px;
+  padding: 0 28px 0 10px;
+  color: #40515c;
+  background: #ffffff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.editor-toolbar-select:focus {
+  outline: 3px solid #c9e7ff;
+  border-color: #1778b8;
+}
+
 .rich-editor-content {
   min-height: 260px;
   padding: 14px;
@@ -325,7 +362,7 @@ textarea:focus {
 
 .rich-editor-content a,
 .rich-content a {
-  color: #145f58;
+  color: #2563eb;
   text-decoration: underline;
 }
 
@@ -369,28 +406,56 @@ textarea:focus {
 
 .secondary-button,
 .secondary-link {
-  color: #ffffff;
-  background: #1b50ffe7;
+  border: 1px solid #b8c2ca;
+  color: #40515c;
+  background: #f7f9fa;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
+.secondary-button:hover,
+.secondary-link:hover {
+  border-color: #8aa7a2;
+  color: #186f65;
+  background: #eef7f5;
+  box-shadow: 0 1px 3px rgba(23, 32, 38, 0.1);
+}
 
 .danger-button {
   min-height: 42px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 0;
+  border: 1px solid #dc6f68;
   border-radius: 6px;
   padding: 0 18px;
-  color: #ffffff;
-  background: #b3261e;
-  font-weight: 700;
+  color: #b3261e;
+  background: #fff6f5;
+  font-weight: 400;
   cursor: pointer;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.danger-button:hover {
+  border-color: #b3261e;
+  color: #8f1f19;
+  background: #ffe9e7;
+  box-shadow: 0 1px 3px rgba(23, 32, 38, 0.1);
 }
 
 .danger-button:disabled {
-  cursor: wait;
-  background: #c98580;
+  cursor: default;
+  color: #c98580;
+  border-color: #e8aaa5;
+  background: #fff6f5;
+  box-shadow: none;
 }
 
 .form-actions {
@@ -536,6 +601,65 @@ textarea:focus {
   gap: 10px;
 }
 
+.post-menu {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.post-menu-button {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 6px;
+  padding: 0;
+  color: #40515c;
+  background: transparent;
+  cursor: pointer;
+}
+
+.post-menu-button:hover {
+  background: #f1f4f6;
+}
+
+.post-menu-dropdown {
+  min-width: 92px;
+  position: absolute;
+  top: 38px;
+  right: 0;
+  z-index: 10;
+  display: grid;
+  overflow: hidden;
+  border: 1px solid #d9e0e6;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(23, 32, 38, 0.12);
+}
+
+.post-menu-dropdown a,
+.post-menu-dropdown button {
+  border: 0;
+  padding: 10px 12px;
+  color: #40515c;
+  background: #ffffff;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.post-menu-dropdown a:hover,
+.post-menu-dropdown button:hover {
+  background: #f7f9fa;
+}
+
+.post-menu-dropdown button:disabled {
+  cursor: default;
+  color: #9aa7af;
+}
+
 .wide-list-link {
   min-height: 42px;
   width: 100%;
@@ -620,6 +744,20 @@ td:nth-child(1) {
   font-weight: 700;
 }
 
+tr.post-row {
+  cursor: pointer;
+  outline: 0;
+}
+
+tr.post-row td {
+  transition: background-color 180ms ease;
+}
+
+tr.post-row:hover td,
+tr.post-row:focus-visible td {
+  background: #f1f4f6;
+}
+
 td:nth-child(2) {
   width: 16%;
 }
@@ -646,8 +784,9 @@ th:nth-child(4) {
   color: #145f58;
 }
 
-.title-link:hover {
-  text-decoration: underline;
+.title-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .comment-count {
@@ -657,7 +796,7 @@ th:nth-child(4) {
   font-weight: 800;
 }
 
-.title-image-icon {
+.title-status-icon {
   flex: 0 0 auto;
   color: #52616b;
 }
@@ -695,7 +834,7 @@ th:nth-child(4) {
 }
 
 .pagination button:disabled {
-  cursor: not-allowed;
+  cursor: default;
   color: #9aa7af;
   background: #f7f9fa;
 }

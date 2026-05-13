@@ -1,3 +1,4 @@
+import { Mark, mergeAttributes } from '@tiptap/core';
 import Highlight from '@tiptap/extension-highlight';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
@@ -25,6 +26,61 @@ import {
 import React from 'react';
 import { uploadImage } from '../api/uploads.js';
 
+const FontSize = Mark.create({
+  name: 'fontSize',
+
+  addAttributes() {
+    return {
+      size: {
+        default: null,
+        parseHTML: (element) => element.style.fontSize?.replace(/['"]+/g, ''),
+        renderHTML: (attributes) => {
+          if (!attributes.size) {
+            return {};
+          }
+
+          return {
+            style: `font-size: ${attributes.size}`
+          };
+        }
+      }
+    };
+  },
+
+  parseHTML() {
+    return [
+      {
+        tag: 'span[style*="font-size"]'
+      }
+    ];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ['span', mergeAttributes(HTMLAttributes), 0];
+  },
+
+  addCommands() {
+    return {
+      setFontSize:
+        (size) =>
+        ({ commands }) =>
+          commands.setMark(this.name, { size }),
+      unsetFontSize:
+        () =>
+        ({ commands }) =>
+          commands.unsetMark(this.name)
+    };
+  }
+});
+
+const fontSizeOptions = [
+  { label: '기본', value: '' },
+  { label: '14 px', value: '14px' },
+  { label: '16 px', value: '16px' },
+  { label: '20 px', value: '20px' },
+  { label: '26 px', value: '26px' }
+];
+
 function ToolbarButton({ active, children, disabled = false, label, onClick }) {
   return (
     <button
@@ -48,6 +104,7 @@ function RichTextEditor({ value, onChange }) {
       StarterKit,
       Underline,
       Highlight,
+      FontSize,
       Image.configure({
         inline: false,
         allowBase64: false
@@ -55,7 +112,11 @@ function RichTextEditor({ value, onChange }) {
       Link.configure({
         openOnClick: false,
         autolink: true,
-        defaultProtocol: 'https'
+        defaultProtocol: 'https',
+        HTMLAttributes: {
+          target: '_blank',
+          rel: 'noopener noreferrer'
+        }
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph']
@@ -84,7 +145,16 @@ function RichTextEditor({ value, onChange }) {
 
   function setLink() {
     const previousUrl = editor.getAttributes('link').href || '';
-    const url = window.prompt('링크 URL을 입력하세요.', previousUrl);
+    const { empty, from, to } = editor.state.selection;
+
+    if (empty && !previousUrl) {
+      window.alert('링크를 걸 텍스트를 먼저 선택해 주세요.');
+      return;
+    }
+
+    const selectedText = editor.state.doc.textBetween(from, to, ' ').trim();
+    const defaultUrl = previousUrl || (looksLikeUrl(selectedText) ? selectedText : '');
+    const url = window.prompt('링크 URL을 입력하세요.', defaultUrl);
 
     if (url === null) {
       return;
@@ -95,7 +165,18 @@ function RichTextEditor({ value, onChange }) {
       return;
     }
 
-    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+    editor.chain().focus().extendMarkRange('link').setLink({ href: normalizeLinkUrl(url) }).run();
+  }
+
+  function handleFontSizeChange(event) {
+    const nextSize = event.target.value;
+
+    if (!nextSize) {
+      editor.chain().focus().unsetFontSize().run();
+      return;
+    }
+
+    editor.chain().focus().setFontSize(nextSize).run();
   }
 
   function openImagePicker() {
@@ -130,6 +211,8 @@ function RichTextEditor({ value, onChange }) {
     }
   }
 
+  const currentFontSize = editor.getAttributes('fontSize').size || '';
+
   return (
     <div className="rich-editor">
       <input
@@ -140,6 +223,19 @@ function RichTextEditor({ value, onChange }) {
         onChange={handleImageChange}
       />
       <div className="editor-toolbar">
+        <select
+          className="editor-toolbar-select"
+          aria-label="글씨 크기"
+          title="글씨 크기"
+          value={currentFontSize}
+          onChange={handleFontSizeChange}
+        >
+          {fontSizeOptions.map((option) => (
+            <option key={option.label} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
         <ToolbarButton label="굵게" active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()}>
           <Bold size={16} />
         </ToolbarButton>
@@ -189,6 +285,20 @@ function RichTextEditor({ value, onChange }) {
       <EditorContent editor={editor} />
     </div>
   );
+}
+
+function normalizeLinkUrl(url) {
+  const trimmedUrl = url.trim();
+
+  if (/^[a-z][a-z\d+.-]*:/i.test(trimmedUrl) || trimmedUrl.startsWith('/') || trimmedUrl.startsWith('#')) {
+    return trimmedUrl;
+  }
+
+  return `https://${trimmedUrl}`;
+}
+
+function looksLikeUrl(text) {
+  return /^(https?:\/\/|www\.|[a-z\d-]+(\.[a-z\d-]+)+)/i.test(text);
 }
 
 export default RichTextEditor;

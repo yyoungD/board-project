@@ -1,6 +1,6 @@
 import React from 'react';
-import { ImageIcon } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ImageIcon, Paperclip } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { getErrorMessage, getPosts } from '../../api/posts.js';
 import Pagination from '../../components/Pagination.jsx';
 import SearchBar from '../../components/SearchBar.jsx';
@@ -9,6 +9,7 @@ import { formatDateTime } from '../../utils/date.js';
 const pageSize = 10;
 
 function PostListPage({ member }) {
+  const navigate = useNavigate();
   const [posts, setPosts] = React.useState([]);
   const [page, setPage] = React.useState(1);
   const [keyword, setKeyword] = React.useState('');
@@ -42,11 +43,22 @@ function PostListPage({ member }) {
     setPage(1);
   }
 
+  function openPost(postId) {
+    navigate(`/posts/${postId}`);
+  }
+
+  function handlePostRowKeyDown(event, postId) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openPost(postId);
+    }
+  }
+
   return (
     <section className="page-section">
       <div className="page-title-row">
         <div>
-          <h1>전체 게시글</h1>
+          <h1 className="list-page-title">전체 게시글</h1>
         </div>
         <div className="list-actions">
           <SearchBar
@@ -69,11 +81,7 @@ function PostListPage({ member }) {
       ) : posts.length === 0 ? (
         <>
           <div className="empty-state">
-            <p>
-              {keyword
-                ? '검색 결과가 없습니다.'
-                : '아직 등록된 게시글이 없습니다.'}
-            </p>
+            <p>{keyword ? '검색 결과가 없습니다.' : '아직 등록된 게시글이 없습니다.'}</p>
             {member && !keyword && (
               <Link className="primary-link" to="/posts/new">
                 첫 글 작성
@@ -97,17 +105,27 @@ function PostListPage({ member }) {
               </thead>
               <tbody>
                 {posts.map((post) => (
-                  <tr key={post.id}>
+                  <tr
+                    className="post-row"
+                    key={post.id}
+                    role="link"
+                    tabIndex={0}
+                    onClick={() => openPost(post.id)}
+                    onKeyDown={(event) => handlePostRowKeyDown(event, post.id)}
+                  >
                     <td>
-                      <Link className="title-link" to={`/posts/${post.id}`}>
-                        {highlightSearchTerm(post.title, keyword)}
+                      <span className="title-link">
+                        <span className="title-text">{highlightSearchTerm(post.title, keyword)}</span>
                         {post.hasImage && (
-                          <ImageIcon className="title-image-icon" size={15} aria-label="이미지 포함" />
+                          <ImageIcon className="title-status-icon" size={15} aria-label="이미지 포함" />
+                        )}
+                        {post.hasFile && (
+                          <Paperclip className="title-status-icon" size={15} aria-label="첨부파일 포함" />
                         )}
                         {post.commentCount > 0 && (
                           <span className="comment-count">({post.commentCount})</span>
                         )}
-                      </Link>
+                      </span>
                     </td>
                     <td>{post.author}</td>
                     <td>{formatDateTime(post.createdAt)}</td>

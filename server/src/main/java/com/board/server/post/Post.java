@@ -14,6 +14,7 @@ public class Post {
 	private LocalDateTime createdAt;
 	private long commentCount;
 	private boolean hasImage;
+	private boolean hasFile;
 	private long viewCount;
 	private List<PostFile> files = List.of();
 
@@ -71,6 +72,14 @@ public class Post {
 
 	public void setHasImage(boolean hasImage) {
 		this.hasImage = hasImage;
+	}
+
+	public boolean isHasFile() {
+		return hasFile;
+	}
+
+	public void setHasFile(boolean hasFile) {
+		this.hasFile = hasFile;
 	}
 
 	public long getViewCount() {

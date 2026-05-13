@@ -1,4 +1,5 @@
 import React from 'react';
+import { MoreVertical } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { deletePost, getErrorMessage, getPost } from '../../api/posts.js';
 import CommentSection from '../../components/CommentSection.jsx';
@@ -10,6 +11,7 @@ function PostDetailPage({ member }) {
   const [post, setPost] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isDeleting, setIsDeleting] = React.useState(false);
+  const [isPostMenuOpen, setIsPostMenuOpen] = React.useState(false);
   const [message, setMessage] = React.useState('');
 
   const isOwner = Boolean(member && post && post.author === member.loginId);
@@ -32,6 +34,10 @@ function PostDetailPage({ member }) {
     loadPost();
   }, [id]);
 
+  function togglePostMenu() {
+    setIsPostMenuOpen((currentValue) => !currentValue);
+  }
+
   async function handleDelete() {
     const confirmed = window.confirm('게시글을 삭제하시겠습니까?');
     if (!confirmed) {
@@ -39,6 +45,7 @@ function PostDetailPage({ member }) {
     }
 
     setIsDeleting(true);
+    setIsPostMenuOpen(false);
     setMessage('');
 
     try {
@@ -59,19 +66,27 @@ function PostDetailPage({ member }) {
         </div>
         <div className="page-actions">
           {isOwner && (
-            <>
-              <Link className="secondary-link" to={`/posts/${id}/edit`}>
-                수정
-              </Link>
+            <div className="post-menu">
               <button
-                className="danger-button"
+                className="post-menu-button"
                 type="button"
-                onClick={handleDelete}
-                disabled={isDeleting}
+                aria-label="게시글 메뉴"
+                aria-expanded={isPostMenuOpen}
+                onClick={togglePostMenu}
               >
-                {isDeleting ? '삭제 중' : '삭제'}
+                <MoreVertical size={20} aria-hidden="true" />
               </button>
-            </>
+              {isPostMenuOpen && (
+                <div className="post-menu-dropdown">
+                  <Link to={`/posts/${id}/edit`} onClick={() => setIsPostMenuOpen(false)}>
+                    수정
+                  </Link>
+                  <button type="button" onClick={handleDelete} disabled={isDeleting}>
+                    {isDeleting ? '삭제 중' : '삭제'}
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
