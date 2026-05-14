@@ -29,3 +29,7 @@ export async function uploadFile(file) {
 export async function deleteFile(fileId) {
   await apiClient.delete(`/api/uploads/files/${fileId}`);
 }
+
+export async function deleteImage(fileId) {
+  await apiClient.delete(`/api/uploads/images/${fileId}`);
+}

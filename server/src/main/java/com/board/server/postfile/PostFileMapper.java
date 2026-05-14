@@ -16,7 +16,7 @@ import org.apache.ibatis.annotations.Update;
 public interface PostFileMapper {
 
 	@Select("""
-		SELECT id, post_id, original_name, stored_name, file_path, content_type, file_size, created_at
+		SELECT id, post_id, comment_id, original_name, stored_name, file_path, content_type, file_size, created_at
 		FROM files
 		WHERE post_id = #{postId}
 		ORDER BY id ASC
@@ -24,7 +24,7 @@ public interface PostFileMapper {
 	List<PostFile> findByPostId(Long postId);
 
 	@Select("""
-		SELECT id, post_id, original_name, stored_name, file_path, content_type, file_size, created_at
+		SELECT id, post_id, comment_id, original_name, stored_name, file_path, content_type, file_size, created_at
 		FROM files
 		WHERE post_id = #{postId}
 		  AND file_path LIKE 'files/%'
@@ -33,9 +33,10 @@ public interface PostFileMapper {
 	List<PostFile> findAttachmentsByPostId(Long postId);
 
 	@Select("""
-		SELECT id, post_id, original_name, stored_name, file_path, content_type, file_size, created_at
+		SELECT id, post_id, comment_id, original_name, stored_name, file_path, content_type, file_size, created_at
 		FROM files
 		WHERE post_id IS NULL
+		  AND comment_id IS NULL
 		  AND (file_path LIKE 'files/%' OR file_path LIKE 'images/%')
 		  AND created_at < #{createdBefore}
 		ORDER BY id ASC
@@ -43,15 +44,24 @@ public interface PostFileMapper {
 	List<PostFile> findUnattachedFilesCreatedBefore(LocalDateTime createdBefore);
 
 	@Select("""
-		SELECT id, post_id, original_name, stored_name, file_path, content_type, file_size, created_at
+		SELECT id, post_id, comment_id, original_name, stored_name, file_path, content_type, file_size, created_at
+		FROM files
+		WHERE comment_id = #{commentId}
+		  AND file_path LIKE 'images/%'
+		ORDER BY id ASC
+		""")
+	List<PostFile> findImagesByCommentId(Long commentId);
+
+	@Select("""
+		SELECT id, post_id, comment_id, original_name, stored_name, file_path, content_type, file_size, created_at
 		FROM files
 		WHERE id = #{id}
 		""")
 	Optional<PostFile> findById(Long id);
 
 	@Insert("""
-		INSERT INTO files (post_id, original_name, stored_name, file_path, content_type, file_size)
-		VALUES (#{postId}, #{originalName}, #{storedName}, #{filePath}, #{contentType}, #{fileSize})
+		INSERT INTO files (post_id, comment_id, original_name, stored_name, file_path, content_type, file_size)
+		VALUES (#{postId}, #{commentId}, #{originalName}, #{storedName}, #{filePath}, #{contentType}, #{fileSize})
 		""")
 	@Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
 	int insert(PostFile postFile);
@@ -87,4 +97,17 @@ public interface PostFileMapper {
 		</script>
 		""")
 	int attachToPost(@Param("postId") Long postId, @Param("fileIds") List<Long> fileIds);
+
+	@Update("""
+		<script>
+		UPDATE files
+		SET comment_id = #{commentId}
+		WHERE id IN
+		<foreach collection="fileIds" item="fileId" open="(" separator="," close=")">
+			#{fileId}
+		</foreach>
+		AND (comment_id IS NULL OR comment_id = #{commentId})
+		</script>
+		""")
+	int attachToComment(@Param("commentId") Long commentId, @Param("fileIds") List<Long> fileIds);
 }

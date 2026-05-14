@@ -544,6 +544,27 @@ textarea:focus {
   color: #667780;
 }
 
+.attachment-file-icon {
+  flex: 0 0 auto;
+  color: #667780;
+}
+
+.attachment-file-icon.pdf {
+  color: #c62828;
+}
+
+.attachment-file-icon.excel {
+  color: #1b7f46;
+}
+
+.attachment-file-icon.hwp {
+  color: #2563eb;
+}
+
+.attachment-file-icon.image {
+  color: #7c3aed;
+}
+
 .attachment-list button {
   min-height: 30px;
   flex: 0 0 auto;
@@ -949,8 +970,99 @@ th:nth-child(4) {
 .comment-form-actions,
 .comment-inline-actions {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.comment-image-preview-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.comment-image-preview-item {
+  width: 88px;
+  height: 88px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #d9e0e6;
+  border-radius: 8px;
+  background: #f7f9fa;
+}
+
+.comment-image-preview-item img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.comment-image-preview-item button {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  padding: 0;
+  color: #ffffff;
+  background: rgba(23, 32, 38, 0.72);
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.comment-image-preview-item button:hover {
+  background: rgba(23, 32, 38, 0.9);
+  transform: scale(1.04);
+}
+
+.comment-image-preview-item button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.comment-submit-actions {
+  display: flex;
   justify-content: flex-end;
   gap: 8px;
+}
+
+.comment-image-button {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #c8d2da;
+  border-radius: 6px;
+  padding: 0;
+  color: #40515c;
+  background: #ffffff;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.comment-image-button:hover:not(:disabled) {
+  border-color: #8aa7a2;
+  background: #eef7f5;
+  box-shadow: 0 1px 3px rgba(23, 32, 38, 0.1);
+}
+
+.comment-image-button:disabled {
+  cursor: default;
+  color: #9aa7af;
+  background: #f7f9fa;
 }
 
 .comments-list {
@@ -1058,6 +1170,35 @@ th:nth-child(4) {
   margin-bottom: 10px;
   line-height: 1.6;
   white-space: pre-wrap;
+}
+
+.comment-image {
+  width: 120px;
+  height: 120px;
+  display: block;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.comment-image-button-view {
+  max-width: 100%;
+  display: block;
+  border: 0;
+  padding: 0;
+  margin: 8px 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.comment-image-button-view.expanded {
+  cursor: zoom-out;
+}
+
+.comment-image-button-view.expanded .comment-image {
+  width: auto;
+  max-width: min(420px, 100%);
+  height: auto;
+  object-fit: contain;
 }
 
 .mention-text {

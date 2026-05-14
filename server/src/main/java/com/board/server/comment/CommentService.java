@@ -2,8 +2,12 @@ package com.board.server.comment;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -11,18 +15,31 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.board.server.post.PostMapper;
+import com.board.server.postfile.PostFile;
+import com.board.server.postfile.PostFileMapper;
+import com.board.server.upload.ImageUploadService;
 
 @Service
 public class CommentService {
 
 	private static final String DELETED_COMMENT_MESSAGE = "삭제된 댓글입니다.";
+	private static final Pattern IMAGE_URL_PATTERN = Pattern.compile("/api/uploads/images/(\\d+)");
 
 	private final CommentMapper commentMapper;
 	private final PostMapper postMapper;
+	private final PostFileMapper postFileMapper;
+	private final ImageUploadService imageUploadService;
 
-	public CommentService(CommentMapper commentMapper, PostMapper postMapper) {
+	public CommentService(
+		CommentMapper commentMapper,
+		PostMapper postMapper,
+		PostFileMapper postFileMapper,
+		ImageUploadService imageUploadService
+	) {
 		this.commentMapper = commentMapper;
 		this.postMapper = postMapper;
+		this.postFileMapper = postFileMapper;
+		this.imageUploadService = imageUploadService;
 	}
 
 	@Transactional(readOnly = true)
@@ -48,6 +65,7 @@ public class CommentService {
 		comment.setAuthor(loginId);
 		comment.setContent(request.content());
 		commentMapper.insert(comment);
+		attachImages(comment.getId(), request.content());
 
 		return toResponse(findComment(comment.getId()), List.of());
 	}
@@ -60,10 +78,20 @@ public class CommentService {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제된 댓글은 수정할 수 없습니다.");
 		}
 
+		List<PostFile> currentImages = postFileMapper.findImagesByCommentId(id);
+		List<Long> nextImageIds = extractImageFileIds(request.content());
+		Set<Long> nextImageIdSet = Set.copyOf(nextImageIds);
+		List<PostFile> removedImages = currentImages.stream()
+			.filter((image) -> !nextImageIdSet.contains(image.getId()))
+			.toList();
+
 		int updatedRows = commentMapper.updateContent(id, request.content());
 		if (updatedRows == 0) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다.");
 		}
+
+		attachImages(id, nextImageIds);
+		imageUploadService.deleteImages(removedImages);
 		return toResponse(findComment(id), List.of());
 	}
 
@@ -72,10 +100,12 @@ public class CommentService {
 		Comment comment = findComment(id);
 		validateOwner(comment, loginId, "본인이 작성한 댓글만 삭제할 수 있습니다.");
 
+		List<PostFile> images = postFileMapper.findImagesByCommentId(id);
 		int updatedRows = commentMapper.markDeleted(id);
 		if (updatedRows == 0) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다.");
 		}
+		imageUploadService.deleteImages(images);
 		return toResponse(findComment(id), List.of());
 	}
 
@@ -93,6 +123,25 @@ public class CommentService {
 		if (!comment.getAuthor().equals(loginId)) {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, message);
 		}
+	}
+
+	private void attachImages(Long commentId, String content) {
+		attachImages(commentId, extractImageFileIds(content));
+	}
+
+	private void attachImages(Long commentId, List<Long> fileIds) {
+		if (!fileIds.isEmpty()) {
+			postFileMapper.attachToComment(commentId, fileIds);
+		}
+	}
+
+	private List<Long> extractImageFileIds(String content) {
+		LinkedHashSet<Long> fileIds = new LinkedHashSet<>();
+		Matcher matcher = IMAGE_URL_PATTERN.matcher(content == null ? "" : content);
+		while (matcher.find()) {
+			fileIds.add(Long.valueOf(matcher.group(1)));
+		}
+		return List.copyOf(fileIds);
 	}
 
 	private List<CommentResponse> toTree(List<Comment> comments) {

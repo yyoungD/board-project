@@ -7,6 +7,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +26,8 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 
 @Service
 public class PostService {
+
+	private static final Logger log = LoggerFactory.getLogger(PostService.class);
 
 	private static final Pattern IMAGE_URL_PATTERN = Pattern.compile("/api/uploads/images/(\\d+)");
 	private static final int VIEW_COUNT_INTERVAL_HOURS = 24;
@@ -94,10 +99,22 @@ public class PostService {
 		post.setAuthor(loginId);
 		post.setContent(request.content());
 
-		postMapper.insert(post);
-		attachImages(post.getId(), request.content());
-		attachFiles(post.getId(), request.fileIds());
-		return findById(post.getId());
+		try {
+			postMapper.insert(post);
+			attachImages(post.getId(), request.content());
+			attachFiles(post.getId(), request.fileIds());
+			return findById(post.getId());
+		} catch (DataAccessException exception) {
+			log.error(
+				"Post create failed. loginId={}, titleLength={}, contentLength={}, fileIds={}",
+				loginId,
+				lengthOf(request.title()),
+				lengthOf(request.content()),
+				request.fileIds(),
+				exception
+			);
+			throw exception;
+		}
 	}
 
 	@Transactional
@@ -148,13 +165,29 @@ public class PostService {
 	private void attachImages(Long postId, String content) {
 		List<Long> fileIds = extractImageFileIds(content);
 		if (!fileIds.isEmpty()) {
-			postFileMapper.attachToPost(postId, fileIds);
+			int attachedRows = postFileMapper.attachToPost(postId, fileIds);
+			if (attachedRows != fileIds.size()) {
+				log.warn(
+					"Some post images were not attached. postId={}, requestedFileIds={}, attachedRows={}",
+					postId,
+					fileIds,
+					attachedRows
+				);
+			}
 		}
 	}
 
 	private void attachFiles(Long postId, List<Long> fileIds) {
 		if (fileIds != null && !fileIds.isEmpty()) {
-			postFileMapper.attachToPost(postId, fileIds);
+			int attachedRows = postFileMapper.attachToPost(postId, fileIds);
+			if (attachedRows != fileIds.size()) {
+				log.warn(
+					"Some post files were not attached. postId={}, requestedFileIds={}, attachedRows={}",
+					postId,
+					fileIds,
+					attachedRows
+				);
+			}
 		}
 	}
 
@@ -179,5 +212,9 @@ public class PostService {
 				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 삭제에 실패했습니다.");
 			}
 		}
+	}
+
+	private int lengthOf(String value) {
+		return value == null ? 0 : value.length();
 	}
 }

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +19,7 @@ import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
@@ -24,6 +27,8 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Service
 public class ImageUploadService {
+
+	private static final Logger log = LoggerFactory.getLogger(ImageUploadService.class);
 
 	private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of(
 		"image/jpeg",
@@ -75,13 +80,23 @@ public class ImageUploadService {
 				file.getSize()
 			);
 		} catch (IOException | SdkException exception) {
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다.");
+			log.error(
+				"Image upload failed. bucket={}, key={}, originalName={}, contentType={}, size={}",
+				s3Properties.bucket(),
+				key,
+				originalName,
+				file.getContentType(),
+				file.getSize(),
+				exception
+			);
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Image upload failed.", exception);
 		}
 	}
 
 	public UploadedImage download(Long fileId) {
 		PostFile postFile = postFileMapper.findById(fileId)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "이미지를 찾을 수 없습니다."));
+			.filter(this::isImageFile)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found."));
 
 		try {
 			GetObjectRequest request = GetObjectRequest.builder()
@@ -96,20 +111,71 @@ public class ImageUploadService {
 				object.response().contentLength()
 			);
 		} catch (NoSuchKeyException exception) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "이미지를 찾을 수 없습니다.");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found.");
 		} catch (SdkException exception) {
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "이미지를 불러오지 못했습니다.");
+			log.error(
+				"Image download failed. bucket={}, key={}, fileId={}",
+				s3Properties.bucket(),
+				postFile.getFilePath(),
+				fileId,
+				exception
+			);
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Image download failed.", exception);
+		}
+	}
+
+	public void deleteUnattached(Long fileId) {
+		PostFile postFile = postFileMapper.findById(fileId)
+			.filter(this::isImageFile)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found."));
+
+		if (postFile.getPostId() != null || postFile.getCommentId() != null) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "Attached images are deleted when the content is updated.");
+		}
+
+		deleteImage(postFile);
+	}
+
+	public void deleteImages(Iterable<PostFile> images) {
+		for (PostFile image : images) {
+			if (isImageFile(image)) {
+				deleteImage(image);
+			}
 		}
 	}
 
 	private void validateImage(MultipartFile file) {
 		if (file.isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미지 파일을 선택해 주세요.");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Select an image file.");
 		}
 
 		String contentType = file.getContentType();
 		if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미지 파일만 업로드할 수 있습니다.");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only image files can be uploaded.");
+		}
+	}
+
+	private boolean isImageFile(PostFile file) {
+		return file.getFilePath() != null && file.getFilePath().startsWith("images/");
+	}
+
+	private void deleteImage(PostFile file) {
+		try {
+			DeleteObjectRequest request = DeleteObjectRequest.builder()
+				.bucket(s3Properties.bucket())
+				.key(file.getFilePath())
+				.build();
+			s3Client.deleteObject(request);
+			postFileMapper.deleteById(file.getId());
+		} catch (SdkException exception) {
+			log.error(
+				"Image delete failed. bucket={}, key={}, fileId={}",
+				s3Properties.bucket(),
+				file.getFilePath(),
+				file.getId(),
+				exception
+			);
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Image delete failed.", exception);
 		}
 	}
 

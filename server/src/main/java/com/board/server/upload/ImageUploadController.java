@@ -67,4 +67,10 @@ public class ImageUploadController {
 		fileUploadService.deleteUnattached(fileId);
 		return ResponseEntity.noContent().build();
 	}
+
+	@DeleteMapping("/images/{fileId}")
+	public ResponseEntity<Void> deleteImage(@PathVariable Long fileId) {
+		imageUploadService.deleteUnattached(fileId);
+		return ResponseEntity.noContent().build();
+	}
 }

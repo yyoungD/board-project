@@ -6,6 +6,7 @@ public class PostFile {
 
 	private Long id;
 	private Long postId;
+	private Long commentId;
 	private String originalName;
 	private String storedName;
 	private String filePath;
@@ -27,6 +28,14 @@ public class PostFile {
 
 	public void setPostId(Long postId) {
 		this.postId = postId;
+	}
+
+	public Long getCommentId() {
+		return commentId;
+	}
+
+	public void setCommentId(Long commentId) {
+		this.commentId = commentId;
 	}
 
 	public String getOriginalName() {

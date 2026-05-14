@@ -1,5 +1,11 @@
 import React from 'react';
-import { MoreVertical } from 'lucide-react';
+import {
+  FileImage,
+  FileSpreadsheet,
+  FileText,
+  FileType,
+  MoreVertical
+} from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { deletePost, getErrorMessage, getPost } from '../../api/posts.js';
 import CommentSection from '../../components/CommentSection.jsx';
@@ -122,6 +128,7 @@ function PostDetailPage({ member }) {
                 <ul className="attachment-list">
                   {post.files.map((file) => (
                     <li key={file.id}>
+                      {renderAttachmentIcon(file)}
                       <a href={`/api/uploads/files/${file.id}`}>{file.originalName}</a>
                       <small>{formatFileSize(file.fileSize || 0)}</small>
                     </li>
@@ -141,6 +148,73 @@ function PostDetailPage({ member }) {
       </Link>
     </section>
   );
+}
+
+function renderAttachmentIcon(file) {
+  const type = getAttachmentType(file);
+  const iconProps = {
+    className: `attachment-file-icon ${type}`,
+    size: 18,
+    'aria-hidden': 'true'
+  };
+
+  if (type === 'pdf') {
+    return <FileText {...iconProps} />;
+  }
+
+  if (type === 'excel') {
+    return <FileSpreadsheet {...iconProps} />;
+  }
+
+  if (type === 'hwp') {
+    return <FileType {...iconProps} />;
+  }
+
+  if (type === 'image') {
+    return <FileImage {...iconProps} />;
+  }
+
+  return <FileText {...iconProps} />;
+}
+
+function getAttachmentType(file) {
+  const contentType = file.contentType || '';
+  const extension = getFileExtension(file.originalName);
+
+  if (contentType === 'application/pdf' || extension === 'pdf') {
+    return 'pdf';
+  }
+
+  if (
+    contentType.includes('spreadsheet') ||
+    contentType.includes('excel') ||
+    ['xls', 'xlsx', 'csv'].includes(extension)
+  ) {
+    return 'excel';
+  }
+
+  if (
+    contentType.includes('haansofthwp') ||
+    contentType.includes('hwp') ||
+    ['hwp', 'hwpx'].includes(extension)
+  ) {
+    return 'hwp';
+  }
+
+  if (contentType.startsWith('image/') || ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(extension)) {
+    return 'image';
+  }
+
+  return 'file';
+}
+
+function getFileExtension(filename) {
+  const dotIndex = filename?.lastIndexOf('.') ?? -1;
+  if (dotIndex < 0) {
+    return '';
+  }
+
+  return filename.slice(dotIndex + 1).toLowerCase();
 }
 
 function formatFileSize(size) {
