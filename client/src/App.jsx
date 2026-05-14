@@ -4,6 +4,7 @@ import { Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import LoginPage from './pages/member/LoginPage.jsx';
 import MyPage from './pages/member/MyPage.jsx';
 import SignupPage from './pages/member/SignupPage.jsx';
+import { logout } from './api/members.js';
 import CreatePostPage from './pages/post/CreatePostPage.jsx';
 import EditPostPage from './pages/post/EditPostPage.jsx';
 import PostDetailPage from './pages/post/PostDetailPage.jsx';
@@ -25,7 +26,30 @@ function App() {
     setMember(authResponse.member);
   }
 
-  function handleLogout() {
+  React.useEffect(() => {
+    function handleAuthChange(event) {
+      setMember(event.detail);
+    }
+
+    function handleAuthLogout() {
+      setMember(null);
+    }
+
+    window.addEventListener('auth:change', handleAuthChange);
+    window.addEventListener('auth:logout', handleAuthLogout);
+
+    return () => {
+      window.removeEventListener('auth:change', handleAuthChange);
+      window.removeEventListener('auth:logout', handleAuthLogout);
+    };
+  }, []);
+
+  async function handleLogout() {
+    try {
+      await logout();
+    } catch {
+      // Local logout should still happen even if the server session is already gone.
+    }
     localStorage.removeItem('member');
     localStorage.removeItem('token');
     setMember(null);
