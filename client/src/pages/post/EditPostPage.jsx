@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getErrorMessage, getPost, updatePost } from '../../api/posts.js';
-import AttachmentFileField from '../../components/AttachmentFileField.jsx';
-import RichTextEditor from '../../components/RichTextEditor.jsx';
+import PostForm from '../../components/PostForm.jsx';
 import { normalizeHtmlLinks } from '../../utils/links.js';
 
 const emptyForm = {
@@ -101,46 +100,21 @@ function EditPostPage({ member }) {
       ) : !canEdit ? (
         <p className="empty-message">본인이 작성한 글만 수정할 수 있습니다.</p>
       ) : (
-        <form className="post-form" onSubmit={handleSubmit}>
-          {message && <p className="status-message">{message}</p>}
-
-          <label>
-            제목
-            <input
-              name="title"
-              value={form.title}
-              onChange={handleChange}
-              maxLength="200"
-              required
-            />
-          </label>
-
-          <div className="field-block">
-            <span className="field-label">작성자</span>
-            <span className="author-display">{form.author}</span>
-          </div>
-
-          <div className="field-block">
-            <span className="field-label">내용</span>
-            <RichTextEditor value={form.content} onChange={handleContentChange} />
-          </div>
-
-          <AttachmentFileField
-            files={files}
-            onChange={setFiles}
-            onError={setMessage}
-            disabled={isSaving}
-          />
-
-          <div className="form-actions">
-            <Link className="secondary-link" to={`/posts/${id}`}>
-              취소
-            </Link>
-            <button className="primary-button" type="submit" disabled={isSaving}>
-              {isSaving ? '수정 중' : '수정'}
-            </button>
-          </div>
-        </form>
+        <PostForm
+          form={form}
+          author={form.author}
+          files={files}
+          onFieldChange={handleChange}
+          onContentChange={handleContentChange}
+          onFilesChange={setFiles}
+          onError={setMessage}
+          onSubmit={handleSubmit}
+          message={message}
+          isSaving={isSaving}
+          cancelTo={`/posts/${id}`}
+          submitLabel="수정"
+          savingLabel="수정 중"
+        />
       )}
     </section>
   );

@@ -1,9 +1,8 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { createPost, getErrorMessage } from '../../api/posts.js';
-import AttachmentFileField from '../../components/AttachmentFileField.jsx';
 import ErrorState from '../../components/ErrorState.jsx';
-import RichTextEditor from '../../components/RichTextEditor.jsx';
+import PostForm from '../../components/PostForm.jsx';
 import { normalizeHtmlLinks } from '../../utils/links.js';
 
 const emptyForm = {
@@ -77,49 +76,24 @@ function CreatePostPage({ member }) {
       <div className="page-title-row">
         <div>
           <h1>게시글 작성</h1>
-        </div>...//////
+        </div>
       </div>
 
-      <form className="post-form" onSubmit={handleSubmit}>
-        {message && <p className="status-message">{message}</p>}
-
-        <label>
-          제목
-          <input
-            name="title"
-            value={form.title}
-            onChange={handleChange}
-            maxLength="200"
-            required
-          />
-        </label>
-
-        <div className="field-block">
-          <span className="field-label">작성자</span>
-          <span className="author-display">{member.loginId}</span>
-        </div>
-
-        <div className="field-block">
-          <span className="field-label">내용</span>
-          <RichTextEditor value={form.content} onChange={handleContentChange} />
-        </div>
-
-        <AttachmentFileField
-          files={files}
-          onChange={setFiles}
-          onError={setMessage}
-          disabled={isSaving}
-        />
-
-        <div className="form-actions">
-          <Link className="secondary-link" to="/">
-            취소
-          </Link>
-          <button className="primary-button" type="submit" disabled={isSaving}>
-            {isSaving ? '저장 중' : '저장'}
-          </button>
-        </div>
-      </form>
+      <PostForm
+        form={form}
+        author={member.loginId}
+        files={files}
+        onFieldChange={handleChange}
+        onContentChange={handleContentChange}
+        onFilesChange={setFiles}
+        onError={setMessage}
+        onSubmit={handleSubmit}
+        message={message}
+        isSaving={isSaving}
+        cancelTo="/"
+        submitLabel="저장"
+        savingLabel="저장 중"
+      />
     </section>
   );
 }
