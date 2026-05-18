@@ -1,9 +1,10 @@
 import React from 'react';
 import { ImageIcon, Paperclip } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getErrorMessage, getPosts } from '../../api/posts.js';
+import { getPosts } from '../../api/posts.js';
 import Pagination from '../../components/Pagination.jsx';
 import SearchBar from '../../components/SearchBar.jsx';
+import { getApiLoadError } from '../../utils/apiError.js';
 import { formatDateTime } from '../../utils/date.js';
 
 const pageSize = 10;
@@ -17,11 +18,13 @@ function PostListPage({ member }) {
   const [totalElements, setTotalElements] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(true);
   const [message, setMessage] = React.useState('');
+  const [loadError, setLoadError] = React.useState(null);
 
   React.useEffect(() => {
     async function loadPosts() {
       setIsLoading(true);
       setMessage('');
+      setLoadError(null);
 
       try {
         const data = await getPosts(page, pageSize, keyword);
@@ -29,7 +32,10 @@ function PostListPage({ member }) {
         setTotalPages(data.totalPages);
         setTotalElements(data.totalElements);
       } catch (error) {
-        setMessage(getErrorMessage(error, '게시글 목록을 불러오지 못했습니다.'));
+        setPosts([]);
+        setTotalPages(0);
+        setTotalElements(0);
+        setLoadError(getPostListLoadError(error));
       } finally {
         setIsLoading(false);
       }
@@ -78,6 +84,11 @@ function PostListPage({ member }) {
 
       {isLoading ? (
         <p className="empty-message">불러오는 중입니다.</p>
+      ) : loadError ? (
+        <div className="empty-state">
+          <h2>{loadError.title}</h2>
+          <p>{loadError.message}</p>
+        </div>
       ) : posts.length === 0 ? (
         <>
           <div className="empty-state">
@@ -161,6 +172,23 @@ function highlightSearchTerm(text, keyword) {
     }
 
     return part;
+  });
+}
+
+function getPostListLoadError(error) {
+  return getApiLoadError(error, {
+    notFound: {
+      title: '게시글 목록을 찾을 수 없습니다.',
+      message: '요청한 목록 주소가 존재하지 않습니다.'
+    },
+    server: {
+      title: '게시글 목록을 불러오지 못했습니다.',
+      message: '서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.'
+    },
+    default: {
+      title: '게시글 목록을 불러오지 못했습니다.',
+      message: '요청을 처리하는 중 문제가 발생했습니다.'
+    }
   });
 }
 

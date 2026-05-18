@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPost, getErrorMessage } from '../../api/posts.js';
 import AttachmentFileField from '../../components/AttachmentFileField.jsx';
+import ErrorState from '../../components/ErrorState.jsx';
 import RichTextEditor from '../../components/RichTextEditor.jsx';
 
 const emptyForm = {
@@ -59,15 +60,13 @@ function CreatePostPage({ member }) {
   if (!member) {
     return (
       <section className="page-section">
-        <p className="empty-message">로그인해야 글을 작성할 수 있습니다.</p>
-        <div className="form-actions">
-          <Link className="secondary-link" to="/">
-            목록
-          </Link>
-          <Link className="primary-link" to="/login">
-            로그인
-          </Link>
-        </div>
+        <ErrorState
+          eyebrow="401 Unauthorized"
+          title="로그인이 필요합니다."
+          message="게시글을 작성하려면 먼저 로그인해주세요."
+          actionLabel="로그인 페이지로 이동"
+          actionTo="/login"
+        />
       </section>
     );
   }

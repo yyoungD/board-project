@@ -1,4 +1,5 @@
 import apiClient from './client.js';
+export { getErrorMessage } from '../utils/apiError.js';
 
 export async function getPosts(page = 1, size = 10, keyword = '') {
   const response = await apiClient.get('/api/posts', {
@@ -28,16 +29,4 @@ export async function updatePost(id, post) {
 
 export async function deletePost(id) {
   await apiClient.delete(`/api/posts/${id}`);
-}
-
-export function getErrorMessage(error, fallbackMessage) {
-  const responseData = error.response?.data;
-
-  return (
-    responseData?.message ||
-    responseData?.error ||
-    responseData?.detail ||
-    fallbackMessage ||
-    error.message
-  );
 }

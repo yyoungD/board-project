@@ -729,6 +729,42 @@ textarea:focus {
   color: #52616b;
 }
 
+.error-state {
+  min-height: 540px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.error-state-icon {
+  width: 72px;
+  height: 72px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: #186f65;
+  background: #eef7f5;
+}
+
+.error-state-message {
+  max-width: 520px;
+  margin-bottom: 8px;
+  color: #52616b;
+  line-height: 1.6;
+}
+
+.error-state-message strong {
+  color: #172026;
+  overflow-wrap: anywhere;
+}
+
+.error-state-link {
+  gap: 7px;
+}
+
 .list-summary {
   margin-bottom: 10px;
   color: #52616b;

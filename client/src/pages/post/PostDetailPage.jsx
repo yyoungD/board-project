@@ -1,14 +1,11 @@
 import React from 'react';
-import {
-  FileImage,
-  FileSpreadsheet,
-  FileText,
-  FileType,
-  MoreVertical
-} from 'lucide-react';
+import { MoreVertical } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { deletePost, getErrorMessage, getPost } from '../../api/posts.js';
+import AttachmentFileIcon from '../../components/AttachmentFileIcon.jsx';
 import CommentSection from '../../components/CommentSection.jsx';
+import ErrorState from '../../components/ErrorState.jsx';
+import { getApiLoadError } from '../../utils/apiError.js';
 import { formatDateTime } from '../../utils/date.js';
 
 function PostDetailPage({ member }) {
@@ -19,6 +16,7 @@ function PostDetailPage({ member }) {
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [isPostMenuOpen, setIsPostMenuOpen] = React.useState(false);
   const [message, setMessage] = React.useState('');
+  const [loadError, setLoadError] = React.useState(null);
 
   const isOwner = Boolean(member && post && post.author === member.loginId);
 
@@ -26,12 +24,14 @@ function PostDetailPage({ member }) {
     async function loadPost() {
       setIsLoading(true);
       setMessage('');
+      setLoadError(null);
 
       try {
         const data = await getPost(id);
         setPost(data);
       } catch (error) {
-        setMessage(getErrorMessage(error, '게시글을 불러오지 못했습니다.'));
+        setPost(null);
+        setLoadError(getPostLoadError(error));
       } finally {
         setIsLoading(false);
       }
@@ -61,6 +61,19 @@ function PostDetailPage({ member }) {
       setMessage(getErrorMessage(error, '게시글 삭제에 실패했습니다.'));
       setIsDeleting(false);
     }
+  }
+
+  if (!isLoading && loadError?.status === 404) {
+    return (
+      <section className="page-section">
+        <ErrorState
+          eyebrow="404 Not Found"
+          title={loadError.title}
+          message={loadError.message}
+          actionLabel="목록으로 이동"
+        />
+      </section>
+    );
   }
 
   return (
@@ -101,7 +114,13 @@ function PostDetailPage({ member }) {
 
       {isLoading ? (
         <p className="empty-message">불러오는 중입니다.</p>
-      ) : post ? (
+      ) : loadError ? (
+        <ErrorState
+          title={loadError.title}
+          message={loadError.message}
+          className="post-error-state"
+        />
+      ) : (
         <>
           <article className="post-detail">
             <dl className="post-meta">
@@ -128,7 +147,7 @@ function PostDetailPage({ member }) {
                 <ul className="attachment-list">
                   {post.files.map((file) => (
                     <li key={file.id}>
-                      {renderAttachmentIcon(file)}
+                      <AttachmentFileIcon file={file} />
                       <a href={`/api/uploads/files/${file.id}`}>{file.originalName}</a>
                       <small>{formatFileSize(file.fileSize || 0)}</small>
                     </li>
@@ -139,82 +158,33 @@ function PostDetailPage({ member }) {
           </article>
           <CommentSection postId={id} member={member} />
         </>
-      ) : (
-        <p className="empty-message">게시글을 찾을 수 없습니다.</p>
       )}
 
-      <Link className="wide-list-link detail-list-link" to="/">
-        목록
-      </Link>
+      {!loadError && (
+        <Link className="wide-list-link detail-list-link" to="/">
+          목록
+        </Link>
+      )}
     </section>
   );
 }
 
-function renderAttachmentIcon(file) {
-  const type = getAttachmentType(file);
-  const iconProps = {
-    className: `attachment-file-icon ${type}`,
-    size: 18,
-    'aria-hidden': 'true'
-  };
-
-  if (type === 'pdf') {
-    return <FileText {...iconProps} />;
-  }
-
-  if (type === 'excel') {
-    return <FileSpreadsheet {...iconProps} />;
-  }
-
-  if (type === 'hwp') {
-    return <FileType {...iconProps} />;
-  }
-
-  if (type === 'image') {
-    return <FileImage {...iconProps} />;
-  }
-
-  return <FileText {...iconProps} />;
-}
-
-function getAttachmentType(file) {
-  const contentType = file.contentType || '';
-  const extension = getFileExtension(file.originalName);
-
-  if (contentType === 'application/pdf' || extension === 'pdf') {
-    return 'pdf';
-  }
-
-  if (
-    contentType.includes('spreadsheet') ||
-    contentType.includes('excel') ||
-    ['xls', 'xlsx', 'csv'].includes(extension)
-  ) {
-    return 'excel';
-  }
-
-  if (
-    contentType.includes('haansofthwp') ||
-    contentType.includes('hwp') ||
-    ['hwp', 'hwpx'].includes(extension)
-  ) {
-    return 'hwp';
-  }
-
-  if (contentType.startsWith('image/') || ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(extension)) {
-    return 'image';
-  }
-
-  return 'file';
-}
-
-function getFileExtension(filename) {
-  const dotIndex = filename?.lastIndexOf('.') ?? -1;
-  if (dotIndex < 0) {
-    return '';
-  }
-
-  return filename.slice(dotIndex + 1).toLowerCase();
+function getPostLoadError(error) {
+  return getApiLoadError(error, {
+    notFound: {
+      status: 404,
+      title: '게시글을 찾을 수 없습니다.',
+      message: '삭제되었거나 존재하지 않는 게시글입니다.'
+    },
+    server: {
+      title: '게시글을 불러오지 못했습니다.',
+      message: '서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.'
+    },
+    default: {
+      title: '게시글을 불러오지 못했습니다.',
+      message: getErrorMessage(error, '요청을 처리하는 중 문제가 발생했습니다.')
+    }
+  });
 }
 
 function formatFileSize(size) {

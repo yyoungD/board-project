@@ -7,6 +7,7 @@ import SignupPage from './pages/member/SignupPage.jsx';
 import { logout } from './api/members.js';
 import CreatePostPage from './pages/post/CreatePostPage.jsx';
 import EditPostPage from './pages/post/EditPostPage.jsx';
+import NotFoundPage from './pages/NotFoundPage.jsx';
 import PostDetailPage from './pages/post/PostDetailPage.jsx';
 import PostListPage from './pages/post/PostListPage.jsx';
 
@@ -91,6 +92,7 @@ function App() {
           <Route path="/posts/new" element={<CreatePostPage member={member} />} />
           <Route path="/posts/:id" element={<PostDetailPage member={member} />} />
           <Route path="/posts/:id/edit" element={<EditPostPage member={member} />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
     </main>
