@@ -7,6 +7,7 @@ import CommentSection from '../../components/CommentSection.jsx';
 import ErrorState from '../../components/ErrorState.jsx';
 import { getApiLoadError } from '../../utils/apiError.js';
 import { formatDateTime } from '../../utils/date.js';
+import { normalizeHtmlLinks } from '../../utils/links.js';
 
 function PostDetailPage({ member }) {
   const { id } = useParams();
@@ -19,6 +20,7 @@ function PostDetailPage({ member }) {
   const [loadError, setLoadError] = React.useState(null);
 
   const isOwner = Boolean(member && post && post.author === member.loginId);
+  const postContent = React.useMemo(() => normalizeHtmlLinks(post?.content), [post?.content]);
 
   React.useEffect(() => {
     async function loadPost() {
@@ -139,7 +141,7 @@ function PostDetailPage({ member }) {
             </dl>
             <div
               className="post-content rich-content"
-              dangerouslySetInnerHTML={{ __html: post.content }}
+              dangerouslySetInnerHTML={{ __html: postContent }}
             />
             {post.files?.length > 0 && (
               <section className="post-attachments">

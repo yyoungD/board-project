@@ -4,6 +4,7 @@ import { createPost, getErrorMessage } from '../../api/posts.js';
 import AttachmentFileField from '../../components/AttachmentFileField.jsx';
 import ErrorState from '../../components/ErrorState.jsx';
 import RichTextEditor from '../../components/RichTextEditor.jsx';
+import { normalizeHtmlLinks } from '../../utils/links.js';
 
 const emptyForm = {
   title: '',
@@ -46,7 +47,7 @@ function CreatePostPage({ member }) {
     try {
       const createdPost = await createPost({
         title: form.title,
-        content: form.content,
+        content: normalizeHtmlLinks(form.content),
         fileIds: files.map((file) => file.id)
       });
       navigate(`/posts/${createdPost.id}`);

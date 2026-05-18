@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getErrorMessage, getPost, updatePost } from '../../api/posts.js';
 import AttachmentFileField from '../../components/AttachmentFileField.jsx';
 import RichTextEditor from '../../components/RichTextEditor.jsx';
+import { normalizeHtmlLinks } from '../../utils/links.js';
 
 const emptyForm = {
   title: '',
@@ -73,7 +74,7 @@ function EditPostPage({ member }) {
     try {
       const updatedPost = await updatePost(id, {
         title: form.title,
-        content: form.content,
+        content: normalizeHtmlLinks(form.content),
         fileIds: files.map((file) => file.id)
       });
       navigate(`/posts/${updatedPost.id}`);

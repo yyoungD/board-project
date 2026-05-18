@@ -23,6 +23,7 @@ import {
   Undo2,
   Unlink
 } from 'lucide-react';
+import { normalizeLinkUrl } from '../utils/links.js';
 import React from 'react';
 import { uploadImage } from '../api/uploads.js';
 
@@ -285,16 +286,6 @@ function RichTextEditor({ value, onChange }) {
       <EditorContent editor={editor} />
     </div>
   );
-}
-
-function normalizeLinkUrl(url) {
-  const trimmedUrl = url.trim();
-
-  if (/^[a-z][a-z\d+.-]*:/i.test(trimmedUrl) || trimmedUrl.startsWith('/') || trimmedUrl.startsWith('#')) {
-    return trimmedUrl;
-  }
-
-  return `https://${trimmedUrl}`;
 }
 
 function looksLikeUrl(text) {
