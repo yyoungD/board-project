@@ -3,6 +3,7 @@ import { User } from 'lucide-react';
 import { Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import LoginPage from './pages/member/LoginPage.jsx';
 import MyPage from './pages/member/MyPage.jsx';
+import OAuthRedirectPage from './pages/member/OAuthRedirectPage.jsx';
 import SignupPage from './pages/member/SignupPage.jsx';
 import { logout } from './api/members.js';
 import CreatePostPage from './pages/post/CreatePostPage.jsx';
@@ -21,11 +22,11 @@ function App() {
   const navigate = useNavigate();
   const [member, setMember] = React.useState(getSavedMember);
 
-  function saveAuth(authResponse) {
+  const saveAuth = React.useCallback((authResponse) => {
     localStorage.setItem('member', JSON.stringify(authResponse.member));
     localStorage.setItem('token', authResponse.token);
     setMember(authResponse.member);
-  }
+  }, []);
 
   React.useEffect(() => {
     function handleAuthChange(event) {
@@ -87,6 +88,7 @@ function App() {
         <Routes>
           <Route path="/" element={<PostListPage member={member} />} />
           <Route path="/login" element={<LoginPage onLogin={saveAuth} />} />
+          <Route path="/oauth2/redirect" element={<OAuthRedirectPage onLogin={saveAuth} />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/mypage" element={<MyPage member={member} onAuthChange={saveAuth} onLogout={handleLogout} />} />
           <Route path="/posts/new" element={<CreatePostPage member={member} />} />

@@ -2,6 +2,7 @@ package com.board.server.member;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -58,6 +59,20 @@ public class MemberService {
 		if (!passwordEncoder.matches(request.password(), member.getPasswordHash())) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "아이디 또는 비밀번호가 올바르지 않습니다.");
 		}
+
+		return issueAuth(member);
+	}
+
+	@Transactional
+	public MemberAuthResult loginWithGoogle(OAuth2User user) {
+		String googleSubject = user.getAttribute("sub");
+		if (googleSubject == null || googleSubject.isBlank()) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Google account identifier is required.");
+		}
+
+		String loginId = "google:" + googleSubject;
+		Member member = memberMapper.findByLoginId(loginId)
+			.orElseGet(() -> createGoogleMember(loginId, user));
 
 		return issueAuth(member);
 	}
@@ -121,6 +136,25 @@ public class MemberService {
 			createAuthResponse(member),
 			refreshTokenService.issue(member.getId())
 		);
+	}
+
+	private Member createGoogleMember(String loginId, OAuth2User user) {
+		String email = user.getAttribute("email");
+		String name = user.getAttribute("name");
+		String displayName = name == null || name.isBlank() ? email : name;
+		if (displayName == null || displayName.isBlank()) {
+			displayName = "Google User";
+		}
+
+		Member member = new Member();
+		member.setLoginId(loginId);
+		member.setPasswordHash("{oauth2}");
+		member.setName(displayName);
+		member.setPhone("");
+		memberMapper.insert(member);
+
+		return memberMapper.findById(member.getId())
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "회원 저장에 실패했습니다."));
 	}
 
 	private MemberAuthResponse createAuthResponse(Member member) {

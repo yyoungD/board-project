@@ -76,7 +76,7 @@ function CreatePostPage({ member }) {
       <div className="page-title-row">
         <div>
           <h1>게시글 작성</h1>
-        </div>
+        </div>...//////
       </div>
 
       <form className="post-form" onSubmit={handleSubmit}>

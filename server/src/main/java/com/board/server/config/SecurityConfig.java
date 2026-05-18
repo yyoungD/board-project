@@ -26,6 +26,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.board.server.auth.OAuth2LoginSuccessHandler;
 import com.board.server.common.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
@@ -38,13 +39,18 @@ import jakarta.servlet.http.HttpServletResponse;
 public class SecurityConfig {
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectMapper objectMapper) throws Exception {
+	public SecurityFilterChain securityFilterChain(
+		HttpSecurity http,
+		ObjectMapper objectMapper,
+		OAuth2LoginSuccessHandler oauth2LoginSuccessHandler
+	) throws Exception {
 		http
 			.csrf((csrf) -> csrf.disable())
 			.cors(Customizer.withDefaults())
-			.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 			.authorizeHttpRequests((authorize) -> authorize
 				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+				.requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/uploads/images/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/uploads/files/**").permitAll()
@@ -68,6 +74,9 @@ public class SecurityConfig {
 					writeErrorResponse(objectMapper, request, response, HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."))
 				.accessDeniedHandler((request, response, exception) ->
 					writeErrorResponse(objectMapper, request, response, HttpStatus.FORBIDDEN, "접근 권한이 없습니다."))
+			)
+			.oauth2Login((oauth2) -> oauth2
+				.successHandler(oauth2LoginSuccessHandler)
 			)
 			.oauth2ResourceServer((oauth2) -> oauth2
 				.jwt(Customizer.withDefaults())

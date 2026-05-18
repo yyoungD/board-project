@@ -84,6 +84,12 @@ function LoginPage({ onLogin }) {
           </button>
         </div>
       </form>
+
+      <div className="oauth-login-section">
+        <a className="secondary-link oauth-login-link" href="/oauth2/authorization/google">
+          Google로 로그인
+        </a>
+      </div>
     </section>
   );
 }
